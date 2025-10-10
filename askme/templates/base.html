@@ -30,17 +30,40 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom">
       <div class="container">
         <a class="navbar-brand fw-bold" href="/">Ask<span class="text-primary">Me</span></a>
+        
+        <form class="d-flex ms-10 my-2 my-lg-0 w-auto" role="search">
+                <input class="form-control me-2" type="search" placeholder="Найти вопрос…" aria-label="Search">
+                <button class="btn btn-primary" type="submit">Поиск</button>
+            </form>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav" aria-controls="topnav" aria-expanded="false" aria-label="Переключить навигацию">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="topnav">
-          <form class="d-flex ms-auto my-2 my-lg-0" role="search">
-            <input class="form-control me-2" type="search" placeholder="Найти вопрос…" aria-label="Search">
-            <button class="btn btn-primary" type="submit">Поиск</button>
-          </form>
-          <ul class="navbar-nav ms-lg-3">
-            <li class="nav-item"><a class="nav-link" href="/ask">Задать вопрос</a></li>
-            <li class="nav-item"><a class="nav-link" href="/user">Профиль</a></li>
+        <div class="collapse navbar-collapse " id="topnav">
+
+          <ul class="navbar-nav ms-auto d-flex">
+               {% block user%}
+              <li class="nav-item"><a class="nav-link" href="/ask">Задать вопрос</a></li>
+              <li class="nav-item">
+                  <div class="d-flex align-items-center"> 
+                      <a class="nav-link" href="/user">
+                          <img id="avatarPreview"
+                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
+                              alt="Avatar preview"
+                              class="img-thumbnail rounded"
+                              width="50" height="50">
+                      </a> <!-- closing a tag -->
+                      <div class="d-flex flex-column align-items-center">
+                          <label class="nav-item">
+                              Artemii
+                          </label>
+                          <a href="/login">
+                              Выйти
+                          </a>
+                      </div>
+                  </div>
+              </li> <!-- Closing li tag -->
+              {% endblock%}
           </ul>
         </div>
       </div>
