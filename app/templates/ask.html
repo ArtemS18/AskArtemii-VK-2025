@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+
+{%block content%}
+
+<main class="container">
+    <h1 class="h3 mb-2">Задать вопрос</h1>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="#" method="post" class="row g-3 needs-validation" novalidate>
+          <div class="col-12">
+            <label for="title" class="form-label">Заголовок</label>
+            <input type="text" id="title" class="form-control" placeholder="Коротко и по делу" required>
+            <div class="invalid-feedback">Пожалуйста, укажите заголовок.</div>
+          </div>
+
+          <div class="col-12">
+            <label for="body" class="form-label">Текст вопроса</label>
+            <textarea id="body" class="form-control" rows="8" placeholder="Опишите проблему и что уже пробовали…" required></textarea>
+            <div class="invalid-feedback">Пожалуйста, опишите вопрос.</div>
+          </div>
+
+          <div class="col-12">
+            <label for="tags" class="form-label">Теги</label>
+            <input type="text" id="tags" class="form-control" placeholder="через пробел: css nginx cache">
+          </div>
+
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit">Опубликовать</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+{%endblock%}
