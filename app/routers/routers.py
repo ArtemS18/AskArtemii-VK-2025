@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.config import config
 
 router = APIRouter(prefix="")
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=config.TEMPLATE_PATH)
 
 @router.get("/", response_class=HTMLResponse)
 async def get_main_page(request: Request):
