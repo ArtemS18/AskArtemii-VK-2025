@@ -1,10 +1,8 @@
 import uvicorn
-from app.web.app import setup_app
 from app.config import config
 
 def main():
-    app = setup_app()
-    uvicorn.run(app, config.HOST, config.PORT, workers=config.MAX_WORKERS, reload=config.RELOAD)
+    uvicorn.run('app.web.app:setup_app', host=config.HOST, port=config.PORT, workers=config.MAX_WORKERS, reload=config.RELOAD, factory=True)
 
 if __name__ == "__main__":
     main()
