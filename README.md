@@ -1,5 +1,6 @@
 ## Описание структуры репозитория
 
-- `main` — главная ветка  
-- `hw-1` — ДЗ1 (Django)
-- `hw1-fast-api` — ДЗ1 (FastAPI)
+- `main` — главная ветка
+- `hw1` — ДЗ1 (FastAPI)
+- `hw1-django` — ДЗ1 (Django)
+
