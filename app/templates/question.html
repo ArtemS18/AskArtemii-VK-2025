@@ -9,12 +9,12 @@
       <div class="card-body">
         <div class="row g-3">
           <div class="col-12 col-sm-3 col-md-2 col-lg-2 d-flex flex-sm-column align-items-center gap-3">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s" alt="Аватар автора" class="img-thumbnail rounded w-75">
+            <img src="{{question.author.img_url}}" alt="Аватар автора" class="img-thumbnail rounded w-75">
             <div class="vote-vertical">
                 <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать за ответ">
                   <i class="bi bi-chevron-up"></i>
                 </button>
-                <div class="count">5</div>
+                <div class="count">{{question.likes}}</div>
                 <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать против ответа">
                   <i class="bi bi-chevron-down"></i>
                 </button>
@@ -23,19 +23,19 @@
 
           <!-- Правая колонка: контент вопроса -->
           <div class="col-12 col-sm">
-            <h1 class="h3 mb-2">Как настроить кэширование статических ресурсов в nginx?</h1>
+            <h1 class="h3 mb-2">{{question.title}}</h1>
             <div class="text-body-secondary small mb-2">
               <span class="me-0">Автор:
-                <a href="./user" class="link-secondary">ivan</a>
+                <a href="./users/{{question.author.id}}" class="link-secondary">{{question.nickname}}</a>
               </span>•
-              <time datetime="2025-09-30T10:15">30 сент. 2025</time>
+              <time datetime="2025-09-30T10:15">{{question.created_at}}</time>
             </div>
             <div class="mb-3">
               <span class="badge text-bg-secondary">nginx</span>
               <span class="badge text-bg-secondary">cache</span>
             </div>
             <p class="mb-0">
-              Есть конфиг с обратным прокси. Нужны долгие TTL для <code>.css</code>, <code>.js</code> и изображений…
+              {{question.text}}
             </p>
           </div>
         </div>
@@ -44,19 +44,18 @@
 
     <!-- ОТВЕТЫ -->
     <section class="mt-4">
-      <h2 class="h5 mb-3">Ответы (3)</h2>
-
-      <!-- Принятый ответ: с рамкой и чекбоксом Correct! -->
-      <article class="card shadow-sm mb-3 answer-correct">
+      <h2 class="h5 mb-3">Ответы ({{question.answers_count}})</h2>
+      {%for answer in question.answers %}
+      <article class="card shadow-sm mb-3 {%if answer.is_correct%}answer-correct{%endif%}">
         <div class="card-body">
           <div class="row g-3 align-items-start">
             <div class="col-3 col-sm-2 col-md-2 col-lg-2 d-flex flex-column align-items-center gap-2">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s" alt="Аватар kate" class="img-thumbnail rounded w-75">
+              <img src="{{answer.author.img_url}}" alt="Аватар kate" class="img-thumbnail rounded w-75">
               <div class="vote-vertical">
                 <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать за ответ">
                   <i class="bi bi-chevron-up"></i>
                 </button>
-                <div class="count">5</div>
+                <div class="count">{{answer.votes}}</div>
                 <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать против ответа">
                   <i class="bi bi-chevron-down"></i>
                 </button>
@@ -67,13 +66,15 @@
             <div class="col">
               <header class="d-flex justify-content-between align-items-center mb-2">
                 <div class="small text-body-secondary">
-                  <a href="/user" class="link-secondary">kate</a> •
-                  <time datetime="2025-09-30T12:40">30 сент. 2025</time>
+                  <a href="/users/{{answer.author.id}}" class="link-secondary">{{answer.author.nickname}}</a> •
+                  <time datetime="2025-09-30T12:40">{{answer.created_at}}</time>
                 </div>
+                {%if answer.is_correct %}
                 <span class="badge text-bg-primary"><i class="bi bi-check2-square me-1"></i>Решение</span>
+                {%endif%}
               </header>
 
-              <p class="mb-3">Добавь версионирование файлов, иначе после деплоя браузеры могут держать старые.</p>
+              <p class="mb-3">{{answer.text}}</p>
 
               <!-- переключатель Correct! -->
               <div class="form-check">
@@ -86,42 +87,7 @@
           </div>
         </div>
       </article>
-
-      <!-- Обычный ответ -->
-      <article class="card shadow-sm mb-3">
-        <div class="card-body">
-          <div class="row g-3 align-items-start">
-            <div class="col-3 col-sm-2 col-md-2 col-lg-2 d-flex flex-column align-items-center gap-2">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s" alt="Аватар max" class="img-thumbnail rounded w-75">
-              <div class="vote-vertical">
-                <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать за ответ">
-                  <i class="bi bi-chevron-up"></i>
-                </button>
-                <div class="count">3</div>
-                <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать против ответа">
-                  <i class="bi bi-chevron-down"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="col">
-              <header class="small text-body-secondary mb-2">
-                <a href="./user" class="link-secondary">max</a> •
-                <time datetime="2025-09-30T13:10">30 сент. 2025</time>
-              </header>
-              <p class="mb-3">Ещё полезно настроить gzip/brotli.</p>
-
-              <!-- переключатель Correct! (активный) -->
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="ans2-correct">
-                <label class="form-check-label" for="ans2-correct">
-                  Correct!
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
+      {%endfor%}
 
        <nav aria-label="Пагинация" class="mt-4">
         <ul class="pagination">

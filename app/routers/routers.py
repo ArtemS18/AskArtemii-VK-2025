@@ -2,21 +2,16 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.config import config
+from app.lib import templating
 
 router = APIRouter(prefix="")
 templates = Jinja2Templates(directory=config.TEMPLATE_PATH)
 
-@router.get("/", response_class=HTMLResponse)
-async def get_main_page(request: Request):
-    return templates.TemplateResponse(request, "index.html")
-
-@router.get("/question", response_class=HTMLResponse)
-async def get_question_page(request: Request):
-    return templates.TemplateResponse(request, "question.html")
 
 @router.get("/ask", response_class=HTMLResponse)
 async def get_ask_page(request: Request):
-    return templates.TemplateResponse(request, "ask.html")
+    base = await templating.get_base_page_values()
+    return templates.TemplateResponse(request, "ask.html", context={**base})
 
 @router.get("/user", response_class=HTMLResponse)
 async def get_user_page(request: Request):

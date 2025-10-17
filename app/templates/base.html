@@ -43,6 +43,7 @@
 
           <ul class="navbar-nav ms-auto d-flex">
                {% block user%}
+               {%if user%}
               <li class="nav-item"><a class="nav-link" href="/ask">Задать вопрос</a></li>
               <li class="nav-item">
                   <div class="d-flex align-items-center"> 
@@ -55,14 +56,25 @@
                       </a> <!-- closing a tag -->
                       <div class="d-flex flex-column align-items-center">
                           <label class="nav-item">
-                              Artemii
+                              {{user.name}}
                           </label>
                           <a href="/login">
                               Выйти
                           </a>
                       </div>
                   </div>
-              </li> <!-- Closing li tag -->
+              </li>
+              {%else%}
+              <div class="d-flex align-items-center gap-3">
+                  <a href="/login">
+                        Войти
+                    </a>
+                  <a href="/signup">
+                      Зарегистрироваться
+                  </a>
+              </div>
+              {%endif%}
+
               {% endblock%}
           </ul>
         </div>
@@ -73,7 +85,6 @@
       <div class="row gy-5">
         <div class="col-lg-8 order-2 order-lg-1">
             {%block content%} {%endblock%}
-          
         </div>
 
         <aside class="col-lg-4 order-1 order-lg-2">
@@ -81,11 +92,9 @@
             <div class="card-header fw-semibold">Популярные теги</div>
             <div class="card-body">
               <div class="tag-cloud">
-                <span class="badge text-bg-secondary">javascript</span>
-                <span class="badge text-bg-secondary">python</span>
-                <span class="badge text-bg-secondary">css</span>
-                <span class="badge text-bg-secondary">django</span>
-                <span class="badge text-bg-secondary">nginx</span>
+                {%for tag in popular_tags%}
+                  <span class="badge text-bg-secondary">{{tag.name}}</span>
+                {%endfor%}
               </div>
             </div>
           </div>
@@ -93,9 +102,9 @@
           <div class="card shadow-sm">
             <div class="card-header fw-semibold">Лучшие участники</div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item bg-body"> <a href="./user.html">ivan</a> — 152 реп.</li>
-              <li class="list-group-item bg-body"> <a href="./user.html">kate</a> — 131 реп.</li>
-              <li class="list-group-item bg-body"> <a href="./user.html">max</a> — 98 реп.</li>
+              {%for user in best_users%}
+                <li class="list-group-item bg-body"> <a href="./users/{{user.id}}">{{user.nickname}}</a> — {{user.count}} реп.</li>
+              {%endfor%}
             </ul>
           </div>
           
