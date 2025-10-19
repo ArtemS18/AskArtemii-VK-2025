@@ -1,13 +1,10 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from app.config import config
-from app.lib import templating
+from app.lib import utils
+from app.web.templating import template_response_base
 from app.repository import crud
 
 router = APIRouter(prefix="")
-templates = Jinja2Templates(directory=config.TEMPLATE_PATH)
-
 
 @router.get("/", response_class=HTMLResponse)
 async def question_view(request: Request):

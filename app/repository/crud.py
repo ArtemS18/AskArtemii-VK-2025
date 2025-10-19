@@ -34,12 +34,17 @@ async def mock_get_questions() -> list[Question]:
                 id=i, 
                 title=f"Question N{i}", 
                 text=f"Text Question N{i}",
-                author=users[i], 
+                author=users[i%len(users)], 
                 likes=(10%(i+1)), 
                 tags=tags,
                 answers_count=len(answers),
                 answers=answers
             )
         )
+
     return questions
     
+
+async def get_count_questions() -> int:
+    questions = await get_questions(0, 1000)
+    return len(questions)
