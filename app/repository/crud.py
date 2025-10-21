@@ -10,7 +10,10 @@ async def get_users() -> list[User]:
     return users
 
 async def get_tags() -> list[Tag]:
-    tags = [Tag(id=1, name="pyhon", popular=10), Tag(id=2, name="nginx", popular=40)]
+    tags = []
+    names = ("python", "nginx", "java", "swift", "fast_api")
+    for i in range(10):
+        tags.append(Tag(id=i, name=names[i%len(names)], popular=(i*10+1)%10))
     return tags
 
 async def get_answers() -> list[Answer]:
