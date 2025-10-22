@@ -1,4 +1,4 @@
-from app.models.mixin import IDMixin, DateTimeMixin
+from app.entities.mixin import IDMixin, DateTimeMixin
 from .base import BasePydantic
 
 
