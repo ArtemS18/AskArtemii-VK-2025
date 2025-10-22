@@ -24,13 +24,14 @@
             <h1 class="h3 mb-2">{{question.title}}</h1>
             <div class="text-body-secondary small mb-2">
               <span class="me-0">Автор:
-                <a href="./users/{{question.author.id}}" class="link-secondary">{{question.nickname}}</a>
+                <a href="./users/{{question.author.id}}" class="link-secondary">{{question.author.nickname}}</a>
               </span>•
               <time datetime="2025-09-30T10:15">{{question.created_at}}</time>
             </div>
             <div class="mb-3">
-              <span class="badge text-bg-secondary">nginx</span>
-              <span class="badge text-bg-secondary">cache</span>
+              {%for tag in question.tags %}
+              <span class="badge text-bg-secondary">{{tag.name}}</span>
+              {%endfor%}
             </div>
             <p class="mb-0">
               {{question.text}}

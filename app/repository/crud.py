@@ -18,7 +18,7 @@ async def mock_get_tags() -> list[Tag]:
 
 async def mock_get_answers() -> list[Answer]:
     users = await mock_get_users()
-    answers = []
+    answers: list[Answer | None] = []
     for i in range(151):
         answers.append(
             Answer(
@@ -26,7 +26,7 @@ async def mock_get_answers() -> list[Answer]:
                 text=f"Text Question N{i}",
                 author=users[i%len(users)], 
                 votes=(10%(i+1)), 
-                is_correct=(i%10==0)
+                is_correct=False
             )
         )
     return answers
@@ -35,8 +35,10 @@ async def mock_get_questions() -> list[Question]:
     questions = []
     tags = await mock_get_tags()
     users = await mock_get_users()
-    answers = await mock_get_answers()
+    all_answers = await mock_get_answers()
     for i in range(100):
+        answers = all_answers[i % len(all_answers):(i % len(all_answers))+ (i%5)+1].copy()
+        answers[0].is_correct = True
         questions.append(
             Question(
                 id=i, 
@@ -44,7 +46,7 @@ async def mock_get_questions() -> list[Question]:
                 text=f"Text Question N{i}",
                 author=users[i%len(users)], 
                 likes=(10%(i+1)), 
-                tags=tags,
+                tags=tags[i%len(tags): (i%len(tags))+3],
                 answers_count=len(answers),
                 answers=answers
             )

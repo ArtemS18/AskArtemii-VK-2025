@@ -37,6 +37,9 @@ def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
     prev_chunk_page = max(1, first_in_window - WINDOW)
     next_chunk_page = min(pages, first_in_window + WINDOW)
 
+    def url_with_page(page: int) -> str:
+        return f"{request.url.path}?page={page}"
+
     return SimpleNamespace(
         items=items,
         page=page,
@@ -51,6 +54,6 @@ def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
         has_next_chunk=has_next_chunk,
         prev_chunk_page=prev_chunk_page,
         next_chunk_page=next_chunk_page,
+
+        url_with_page=url_with_page,
     )
-
-

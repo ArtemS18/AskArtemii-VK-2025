@@ -23,5 +23,5 @@ async def get_base_page_values() -> dict[str, Any]:
     return {
         "best_users": best_users, 
         "popular_tags": popular_tags ,
-        "user": user[0]
+        "user": user[0],
         }
