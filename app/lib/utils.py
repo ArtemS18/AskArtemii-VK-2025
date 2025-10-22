@@ -1,10 +1,11 @@
 from math import ceil
 from types import SimpleNamespace
+from typing import Any
 from starlette.requests import Request
 
 WINDOW = 10
 
-def paginate(objects_list, request: Request, per_page: int = 5):
+def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
     raw_page = request.query_params.get("page", "1")
     try:
         page = int(raw_page)
@@ -12,7 +13,7 @@ def paginate(objects_list, request: Request, per_page: int = 5):
         page = 1
     if page < 1:
         page = 1
-        
+
     total = len(objects_list)  
     pages = max(1, ceil(total / per_page))
     if page > pages:

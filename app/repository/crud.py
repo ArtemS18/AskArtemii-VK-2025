@@ -18,10 +18,18 @@ async def mock_get_tags() -> list[Tag]:
 
 async def mock_get_answers() -> list[Answer]:
     users = await mock_get_users()
-    return [
-        Answer(id=0, text="Answer 1", author=users[0], votes=50, is_correct=True),
-        Answer(id=0, text="Answer 2", author=users[1], votes=3)
-        ]
+    answers = []
+    for i in range(151):
+        answers.append(
+            Answer(
+                id=i, 
+                text=f"Text Question N{i}",
+                author=users[i%len(users)], 
+                votes=(10%(i+1)), 
+                is_correct=(i%10==0)
+            )
+        )
+    return answers
 
 async def mock_get_questions() -> list[Question]:
     questions = []
