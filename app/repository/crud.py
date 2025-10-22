@@ -46,5 +46,5 @@ async def mock_get_questions() -> list[Question]:
     
 
 async def get_count_questions() -> int:
-    questions = await get_questions(0, 1000)
+    questions = await mock_get_questions(0, 1000)
     return len(questions)
