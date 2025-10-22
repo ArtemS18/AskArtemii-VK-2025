@@ -7,19 +7,26 @@ from app.repository import crud
 router = APIRouter(prefix="")
 
 @router.get("/", response_class=HTMLResponse)
-async def question_view(request: Request):
+async def get_question_page(request: Request, page: int = Query(default=1, ge=1)):
     questions = await crud.mock_get_questions()
-    base = await templating.get_base_page_values()
-    return templates.TemplateResponse(request, "index.html", context={
-        **base,
-        "questions": questions
-    })
+
+    pagination_data = utils.paginate(questions, request, per_page=5)
+
+    template = await template_response_base(request, "index.html", {
+        "pagination": pagination_data,
+        "questions":pagination_data.items
+        })
+    return template
 
 @router.get("/questions/{id}", response_class=HTMLResponse)
-async def ask_view(request: Request, id: int):
+async def get_ask_page(request: Request, id: int, page: int = Query(default=1, ge=1)):
     questions = await crud.mock_get_questions()
-    base = await templating.get_base_page_values()
-    return templates.TemplateResponse(request, "question.html", context={
-        **base,
-        "question": questions[id],
-    })
+    question = questions[id]
+    pagination_data = utils.paginate(question.answers, request, per_page=5)
+    template = await template_response_base(request, "question.html", {
+        "question":question, 
+        "answers": pagination_data.items,
+        "pagination": pagination_data
+        })
+    return template
+
