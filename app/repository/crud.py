@@ -36,7 +36,7 @@ async def mock_get_questions() -> list[Question]:
     tags = await mock_get_tags()
     users = await mock_get_users()
     answers = await mock_get_answers()
-    for i in range(5):
+    for i in range(100):
         questions.append(
             Question(
                 id=i, 

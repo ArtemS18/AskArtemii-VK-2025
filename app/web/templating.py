@@ -7,7 +7,7 @@ from app.config.config import config
 from app.repository import crud
 
 
-templates = Jinja2Templates(directory=config.template.dir)
+templates = Jinja2Templates(directory=config.template_path)
 
 async def template_response_base(request: Request, template_name: str, context: dict[str, Any] = {}):
     base_val = await get_base_page_values()
