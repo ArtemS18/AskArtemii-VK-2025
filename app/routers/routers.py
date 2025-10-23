@@ -30,3 +30,8 @@ async def get_login_page(request: Request):
 async def get_signup_page(request: Request):
     return templates.TemplateResponse(request, "signup.html")
 
+@router.get("/hot", response_class=HTMLResponse)
+async def get_hot_page(request: Request):
+    return templates.TemplateResponse(request, "hot_questions.html")
+
+
