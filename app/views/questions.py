@@ -7,7 +7,7 @@ from app.repository import crud
 router = APIRouter(prefix="")
 
 @router.get("/", response_class=HTMLResponse)
-async def get_question_page(request: Request, page: int = Query(default=1, ge=1)):
+async def get_questions_page(request: Request, page: int = Query(default=1, ge=1)):
     questions = await crud.mock_get_questions()
 
     pagination_data = utils.paginate(questions, request, per_page=5)
@@ -19,7 +19,7 @@ async def get_question_page(request: Request, page: int = Query(default=1, ge=1)
     return template
 
 @router.get("/questions/{id}", response_class=HTMLResponse)
-async def get_ask_page(request: Request, id: int, page: int = Query(default=1, ge=1)):
+async def get_question_page(request: Request, id: int, page: int = Query(default=1, ge=1)):
     questions = await crud.mock_get_questions()
     question = questions[id]
     pagination_data = utils.paginate(question.answers, request, per_page=5)
@@ -30,3 +30,9 @@ async def get_ask_page(request: Request, id: int, page: int = Query(default=1, g
         })
     return template
 
+
+
+@router.get("/ask", response_class=HTMLResponse)
+async def get_ask_page(request: Request):
+    template = await template_response_base(request, "ask.html", {})
+    return template

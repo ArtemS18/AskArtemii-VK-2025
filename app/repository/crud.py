@@ -18,7 +18,7 @@ async def mock_get_tags() -> list[Tag]:
 
 async def mock_get_answers() -> list[Answer]:
     users = await mock_get_users()
-    answers: list[Answer | None] = []
+    answers: list[Answer] = []
     for i in range(151):
         answers.append(
             Answer(
@@ -56,5 +56,5 @@ async def mock_get_questions() -> list[Question]:
     
 
 async def get_count_questions() -> int:
-    questions = await mock_get_questions(0, 1000)
+    questions = await mock_get_questions()
     return len(questions)

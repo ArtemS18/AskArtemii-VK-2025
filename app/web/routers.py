@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.views.routers import router
+from app.views.autho import router
 from app.views.questions import router as question_router
 from app.views.users import router as users_router
 

@@ -25,3 +25,13 @@ async def get_base_page_values() -> dict[str, Any]:
         "popular_tags": popular_tags ,
         "user": user[0],
         }
+
+templates.env.globals.update({
+    "URL_HOME": config.endpoint.base,
+    "URL_ASK": config.endpoint.ask,
+    "URL_QUESTION": config.endpoint.question,
+    "URL_LOGIN": config.endpoint.login,
+    "URL_SIGNUP": config.endpoint.singup,
+    "URL_USER": config.endpoint.user,
+    "URL_HOT_TAGS": config.endpoint.hot_tags,
+})
