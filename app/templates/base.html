@@ -29,7 +29,7 @@
     </style>
     <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom">
       <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Ask<span class="text-primary">Artemii</span></a>
+        <a class="navbar-brand fw-bold" href="{{URL_HOME}}">Ask<span class="text-primary">Artemii</span></a>
         
         <form class="d-flex ms-10 my-2 my-lg-0 w-auto" role="search">
                 <input class="form-control me-2" type="search" placeholder="Найти вопрос…" aria-label="Search">
@@ -44,10 +44,10 @@
           <ul class="navbar-nav ms-auto d-flex">
                {% block user%}
                {%if user%}
-              <li class="nav-item"><a class="nav-link" href="/ask">Задать вопрос</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{URL_ASK}}">Задать вопрос</a></li>
               <li class="nav-item">
                   <div class="d-flex align-items-center"> 
-                      <a class="nav-link" href="/user">
+                      <a class="nav-link" href="{{URL_USER}}/me">
                           <img id="avatarPreview"
                               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
                               alt="Avatar preview"
@@ -66,10 +66,10 @@
               </li>
               {%else%}
               <div class="d-flex align-items-center gap-3">
-                  <a href="/login">
+                  <a href="{{URL_LOGIN}}">
                         Войти
                     </a>
-                  <a href="/signup">
+                  <a href="{{URL_SIGNUP}}">
                       Зарегистрироваться
                   </a>
               </div>
@@ -94,7 +94,7 @@
             <div class="card-body">
               <div class="tag-cloud">
                 {%for tag in popular_tags%}
-                  <span class="badge text-bg-secondary">{{tag.name}}</span>
+                  <span class="badge text-bg-secondary"><a class="text-decoration-none link-light" href="{{URL_HOT_TAGS}}/{{tag.id}}">{{tag.name}}</a></span>
                 {%endfor%}
               </div>
             </div>
@@ -104,7 +104,7 @@
             <div class="card-header fw-semibold">Лучшие участники</div>
             <ul class="list-group list-group-flush">
               {%for user in best_users%}
-                <li class="list-group-item bg-body"> <a href="./users/{{user.id}}">{{user.nickname}}</a> — {{user.count}} реп.</li>
+                <li class="list-group-item bg-body"> <a href="{{URL_USER}}/{{user.id}}">{{user.nickname}}</a> — {{user.count}} реп.</li>
               {%endfor%}
             </ul>
           </div>

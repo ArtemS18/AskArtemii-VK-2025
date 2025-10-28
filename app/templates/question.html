@@ -24,7 +24,7 @@
             <h1 class="h3 mb-2">{{question.title}}</h1>
             <div class="text-body-secondary small mb-2">
               <span class="me-0">Автор:
-                <a href="./users/{{question.author.id}}" class="link-secondary">{{question.author.nickname}}</a>
+                <a href="{{URL_USERS}}/{{question.author.id}}" class="link-secondary">{{question.author.nickname}}</a>
               </span>•
               <time datetime="2025-09-30T10:15">{{question.created_at}}</time>
             </div>

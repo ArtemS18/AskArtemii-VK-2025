@@ -1,3 +1,4 @@
+from typing import Optional
 from app.entities.answers import Answer
 from app.entities.questions import Question
 from app.entities.tags import Tag
@@ -58,3 +59,14 @@ async def mock_get_questions() -> list[Question]:
 async def get_count_questions() -> int:
     questions = await mock_get_questions()
     return len(questions)
+
+async def mock_get_questions_by_tag(tag_id: int) -> list[Question | None]:
+    all_questions = await mock_get_questions()
+    res: list[Question | None] = []
+    for q in all_questions:
+        for tag in q.tags: 
+            if tag.id == tag_id:
+                res.append(q)
+                break
+    return res
+

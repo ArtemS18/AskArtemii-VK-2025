@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {%block content%}
-    <div class="d-flex align-items-center gap-3">
-        <h1> New </h1>
-        <a class="h4 link-light text-decoration-none" href="./hot">Hot</a>
-    </div>
+    {%block question_title%}
+    <h2>
+        <span class="badge text-bg-primary"> new</span>
+        <span class="badge text-bg-secondary"> 
+            <a class="link-light text-decoration-none" href="{{URL_HOT_QUESTION}}">hot</a> 
+        </span> 
+    </h2>
+    {%endblock%}
     {%for question in questions%}
         <div class="card shadow-sm mb-3">
             <div class="card-body">
@@ -22,16 +26,18 @@
                         </div>
                     </div>
                     <div class="col-12 col-sm">
-                            <a class="h5 link-light text-decoration-none d-block mb-2" href="./questions/{{question.id}}">
+                            <a class="h5 link-light text-decoration-none d-block mb-2" href="{{URL_QUESTION}}/{{question.id}}">
                             {{question.title}}
                         </a>
                         <div class="mb-2">
                             {%for tag in question.tags%}
-                                <span class="badge text-bg-secondary">{{tag.name}}</span>
+                                <span class="badge text-bg-secondary">
+                                    <a class="text-decoration-none link-light" href="{{URL_HOT_TAGS}}/{{tag.id}}">{{tag.name}}</a>
+                                </span>
                             {%endfor%}
                         </div>
                         <div class="question-meta text-body-secondary mb-2">
-                            <small>Автор: <a href="./user" class="link-secondary">{{question.author.nickname}}</a></small>
+                            <small>Автор: <a href="{{URL_USER}}" class="link-secondary">{{question.author.nickname}}</a></small>
                             <small><time datetime="{{question.created_at}}"></time></small>
                         </div>
                         <div class="h6 mb">

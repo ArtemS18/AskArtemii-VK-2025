@@ -1,6 +1,6 @@
 from app.entities.users import User
-from .base import BasePydantic
-from .mixin import IDMixin, DateTimeMixin
+from app.entities.base import BasePydantic
+from app.entities.mixin import IDMixin, DateTimeMixin
 
 
 class Answer(IDMixin, DateTimeMixin, BasePydantic):

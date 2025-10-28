@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel
 import os
@@ -16,7 +17,8 @@ class EndpointConfig(BaseModel):
     question: str = "/questions"
     user: str = "/users"
     ask: str = "/asks"
-    hot_tags: str = "/hot"
+    tags: str = "/tags"
+    hot: str="/hot"
     login: str = "/login"
     singup: str = "/signup"
 
@@ -29,7 +31,7 @@ class Config(BaseSettings):
         env_file=os.getenv("APP__ENV_PATH", ".env")
     )
     base_dir: str = "app/"
-    server: ServerConfig 
+    server: ServerConfig
     template: TemplateConfig
     endpoint: EndpointConfig
 
