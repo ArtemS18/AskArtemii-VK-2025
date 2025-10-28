@@ -25,10 +25,11 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="APP__",
         env_nested_delimiter="__",
-        str_to_upper=True
+        str_to_upper=True,
+        env_file=os.getenv("APP__ENV_PATH", ".env")
     )
     base_dir: str = "app/"
-    server: ServerConfig
+    server: ServerConfig 
     template: TemplateConfig
     endpoint: EndpointConfig
 
@@ -36,7 +37,7 @@ class Config(BaseSettings):
     def template_path(self):
         return self.base_dir+self.template.dir
     
-config = Config(_env_file=os.getenv("APP__ENV_PATH", ".env"))
+config = Config()
 
 
 
