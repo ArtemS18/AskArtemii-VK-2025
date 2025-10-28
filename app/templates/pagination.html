@@ -1,0 +1,15 @@
+<nav aria-label="Пагинация" class="mt-4">
+    <ul class="pagination">
+        {% if pagination.pages > 1 %}
+            {% if pagination.has_prev_chunk %}
+            <li class="page-item"><a class="page-link" href="{{ pagination.url_with_page(pagination.prev_chunk_page) }}">← Назад</a></li>
+            {% endif %}
+            {%for page in pagination.window_range %}
+            <li class="page-item {%if page == pagination.page %}active{%endif%}"><a class="page-link" href="{{ pagination.url_with_page(page) }}">{{page}}</a></li>
+            {%endfor%}
+            {% if pagination.has_next_chunk %}
+            <li class="page-item"><a class="page-link" href="{{ pagination.url_with_page(pagination.next_chunk_page) }}">Дальше →</a></li>
+            {% endif %}
+        {% endif %}
+    </ul>
+</nav>

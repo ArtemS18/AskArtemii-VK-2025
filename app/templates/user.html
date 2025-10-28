@@ -1,60 +1,53 @@
-{% extends 'base.html' %}
+{% extends 'form.html' %}
 
-{% block content %}
-<main>
-  <div class="row gy-4">
-    <div class="col-lg-8">
-      <h1 class="h3 mb-3">Settings: Dr. Pepper</h1>
+{%block form_label%} 
+  Настройки пользователя
+{%endblock%}
 
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <form action="#" method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
-            <div class="col-12">
-              <label for="login" class="form-label">Login</label>
-              <input type="text" id="login" name="login" class="form-control" value="dr_pepper" required>
-              <div class="invalid-feedback">Укажите логин.</div>
-            </div>
 
-            <div class="col-12">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" id="email" name="email" class="form-control" value="dr.pepper@mail.ru" required>
-              <div class="invalid-feedback">Введите корректный email.</div>
-            </div>
+{% block form_content %}
+<form action="#" method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+  <div class="col-12">
+    <label for="login" class="form-label">Login</label>
+    <input type="text" id="login" name="login" class="form-control" value="" required>
+    <div class="invalid-feedback">Укажите логин.</div>
+  </div>
 
-            <div class="col-12">
-              <label for="nickname" class="form-label">NickName</label>
-              <input type="text" id="nickname" name="nickname" class="form-control" value="Dr. Pepper" required>
-              <div class="invalid-feedback">Укажите никнейм.</div>
-            </div>
+  <div class="col-12">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" id="email" name="email" class="form-control" value="" required>
+    <div class="invalid-feedback">Введите корректный email.</div>
+  </div>
 
-            <div class="col-12">
-              <label class="form-label d-block">Upload avatar</label>
+  <div class="col-12">
+    <label for="nickname" class="form-label">NickName</label>
+    <input type="text" id="nickname" name="nickname" class="form-control" value="" required>
+    <div class="invalid-feedback">Укажите никнейм.</div>
+  </div>
 
-              <div class="d-flex align-items-start gap-3 flex-wrap">
-                <img id="avatarPreview"
-                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
-                     alt="Avatar preview"
-                     class="img-thumbnail rounded"
-                     width="140" height="140">
-                <div class="flex-grow-1">
-                  <div class="input-group">
-                    <input class="form-control" type="file" id="avatar" name="avatar" accept="image/*" aria-label="Choose avatar">
-                    <button class="btn btn-outline-secondary" type="button" id="btn-choose">choose</button>
-                  </div>
-                  <small class="text-body-secondary d-block mt-2">PNG/JPG, до 5 МБ.</small>
-                </div>
-              </div>
-            </div>
+  <div class="col-12">
+    <label class="form-label d-block">Upload avatar</label>
 
-            <div class="col-12 mt-2">
-              <button class="btn btn-primary" type="submit">Save</button>
-            </div>
-
-          </form>
+    <div class="d-flex align-items-start gap-3 flex-wrap">
+      <!-- <img id="avatarPreview"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
+            alt="Avatar preview"
+            class="img-thumbnail rounded"
+            width="140" height="140"> -->
+      <div class="flex-grow-1">
+        <div class="input-group">
+          <input class="form-control" type="file" id="avatar" name="avatar" accept="image/*" aria-label="Choose avatar">
+          <button class="btn btn-outline-secondary" type="button" id="btn-choose">choose</button>
         </div>
+        <small class="text-body-secondary d-block mt-2">PNG/JPG, до 5 МБ.</small>
       </div>
     </div>
   </div>
-</main>
+
+  <div class="col-12 mt-2">
+    <button class="btn btn-primary" type="submit">Save</button>
+  </div>
+
+</form>
 
 {% endblock %}

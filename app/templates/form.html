@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main>
+  <div class="row gy-4">
+    <div class="col-lg-8">
+      <h1 class="h3 mb-3">{% block form_label%} {%endblock%}</h1>
+      {%if error %}
+      <div class="alert alert-danger" role="alert">
+        {%if error.text%} 
+        {{error.text}}
+        {%else%}
+        Неизветная ошибка!
+        {%endif%}
+      </div>
+      {%endif%}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          {% block form_content%} {%endblock%}
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% endblock %}

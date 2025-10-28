@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
 {%block content%}
+    <div class="d-flex align-items-center gap-3">
+        <h1> New </h1>
+        <a class="h4 link-light text-decoration-none" href="./hot">Hot</a>
+    </div>
     {%for question in questions%}
         <div class="card shadow-sm mb-3">
             <div class="card-body">
@@ -41,13 +45,8 @@
             </div>
         </div>
     {%endfor%}
-    <nav aria-label="Пагинация" class="mt-4">
-        <ul class="pagination">
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Дальше →</a></li>
-        </ul>
-    </nav>
+    {%block pagination%}
+      {% include 'pagination.html' %}
+    {%endblock%}
 
 {%endblock%}

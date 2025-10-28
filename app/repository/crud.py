@@ -18,28 +18,43 @@ async def mock_get_tags() -> list[Tag]:
 
 async def mock_get_answers() -> list[Answer]:
     users = await mock_get_users()
-    return [
-        Answer(id=0, text="Answer 1", author=users[0], votes=50, is_correct=True),
-        Answer(id=0, text="Answer 2", author=users[1], votes=3)
-        ]
+    answers: list[Answer] = []
+    for i in range(151):
+        answers.append(
+            Answer(
+                id=i, 
+                text=f"Text Question N{i}",
+                author=users[i%len(users)], 
+                votes=(10%(i+1)), 
+                is_correct=False
+            )
+        )
+    return answers
 
 async def mock_get_questions() -> list[Question]:
     questions = []
     tags = await mock_get_tags()
     users = await mock_get_users()
-    answers = await mock_get_answers()
-    for i in range(5):
+    all_answers = await mock_get_answers()
+    for i in range(100):
+        answers = all_answers[i % len(all_answers):(i % len(all_answers))+ (i%5)+1].copy()
+        answers[0].is_correct = True
         questions.append(
             Question(
                 id=i, 
                 title=f"Question N{i}", 
                 text=f"Text Question N{i}",
-                author=users[i], 
+                author=users[i%len(users)], 
                 likes=(10%(i+1)), 
-                tags=tags,
+                tags=tags[i%len(tags): (i%len(tags))+3],
                 answers_count=len(answers),
                 answers=answers
             )
         )
+
     return questions
     
+
+async def get_count_questions() -> int:
+    questions = await mock_get_questions()
+    return len(questions)
