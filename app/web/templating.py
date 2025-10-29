@@ -29,7 +29,7 @@ async def get_base_page_values() -> dict[str, Any]:
 templates.env.globals.update({
     "URL_HOME": config.endpoint.base,
     "URL_ASK": config.endpoint.ask,
-    "URL_QUESTION": "."+config.endpoint.question,
+    "URL_QUESTION": config.endpoint.question,
     "URL_LOGIN": config.endpoint.login,
     "URL_SIGNUP": config.endpoint.singup,
     "URL_USER": config.endpoint.user,

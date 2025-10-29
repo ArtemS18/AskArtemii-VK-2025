@@ -8,13 +8,14 @@ authors = [
 ]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<4.0"
 dependencies = [
     "jinja2 (>=3.1.6,<4.0.0)",
     "fastapi (>=0.119.0,<0.120.0)",
     "uvicorn (>=0.37.0,<0.38.0)",
     "pydantic-settings (>=2.11.0,<3.0.0)",
-    "mypy (>=1.18.2,<2.0.0)"
+    "mypy (>=1.18.2,<2.0.0)",
+    "loguru (>=0.7.3,<0.8.0)"
 ]
 
 
