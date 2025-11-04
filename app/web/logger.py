@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler
 import os
 import pathlib
 
-FORMAT = "[%(asctime)s.%(msecs)03d] %(levelname)-8s %(module)10s:%(funcName)s:%(lineno)-5d %(message)10s"
+FORMAT = "[%(asctime)s.%(msecs)03d] %(levelname)-8s %(module)10s:%(funcName)s:%(lineno)-10d %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 LIB_LOGGERS = ["uvicorn.access", "fastapi","uvicorn.error" ]
