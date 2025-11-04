@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
-from app.config.config import config
+from app.core.config import config
 from app.repository import crud
 
 

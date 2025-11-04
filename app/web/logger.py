@@ -19,7 +19,7 @@ def setup_logger():
     os.makedirs(p, exist_ok=True)
     fileHandler = RotatingFileHandler(
         LOG_FILE, 
-        maxBytes=1024*1024*5, #10 MB
+        maxBytes=1024*1024*5, #5 MB
         backupCount=2, 
         encoding="utf-8"
     )

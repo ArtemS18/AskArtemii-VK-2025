@@ -12,6 +12,18 @@ class ServerConfig(BaseModel):
 class TemplateConfig(BaseModel):
     dir: str = "templates"
 
+class DBConfig(BaseModel):
+    host: str = "localhost"
+    port: int = 5434
+    login: str = "postgres"
+    password: str = "postgres"
+    base_db: str = "postgres"
+    driver: str = "postgresql+asyncpg"
+
+    @property
+    def url(self):
+        return f"{self.driver}://{self.login}:{self.password}@{self.host}:{self.port}/{self.base_db}"
+
 class EndpointConfig(BaseModel):
     base: str = "/"
     question: str = "/questions"
@@ -25,7 +37,6 @@ class EndpointConfig(BaseModel):
 
 class Config(BaseSettings):
     model_config = SettingsConfigDict(
-        env_prefix="APP__",
         env_nested_delimiter="__",
         str_to_upper=True,
         env_file=os.getenv("APP__ENV_PATH", ".env")
@@ -34,6 +45,7 @@ class Config(BaseSettings):
     server: ServerConfig
     template: TemplateConfig
     endpoint: EndpointConfig
+    db: DBConfig
 
     @property
     def template_path(self):
