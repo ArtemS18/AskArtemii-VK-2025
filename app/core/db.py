@@ -12,5 +12,12 @@ async def init_db():
     async with engin.begin() as conn:
         await conn.run_sync(BaseORM.metadata.create_all)
 
+async def drop_db():
+        from app.models.base import BaseORM
+        import app.models # noqa: F401
+
+        async with engin.begin() as conn:
+            await conn.run_sync(BaseORM.metadata.drop_all)
+
 async def close():
     await engin.dispose()

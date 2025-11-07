@@ -1,6 +1,7 @@
 from typing import List, Optional
 import typing
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Integer, String
 
@@ -14,14 +15,28 @@ if typing.TYPE_CHECKING:
 class UserORM(IDMixin,CreatedMixin, BaseORM):
     __tablename__ = "users"
 
-    login: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    nickname: Mapped[str] = mapped_column(String(100), nullable=False)
-    popular_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    img_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    hashed_password: Mapped[str] = mapped_column(String(30))
+    login: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
+    popular_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False, index=True)
 
+    profile: Mapped["UserProfileORM"] = relationship(
+        back_populates="user", 
+        uselist=False
+    )
     questions: Mapped[List["QuestionORM"]] = relationship(back_populates="author")
     answers: Mapped[List["AnswerORM"]] = relationship(back_populates="author")
-    answer_likes: Mapped[List["AnswerLikeORM"]] = relationship(back_populates="answer_likes")
-    question_likes: Mapped[List["QuestionLikeORM"]] = relationship(back_populates="question_likes")
+    answer_likes: Mapped[List["AnswerLikeORM"]] = relationship(back_populates="user")
+    question_likes: Mapped[List["QuestionLikeORM"]] = relationship(back_populates="user")
 
+class UserProfileORM(IDMixin, BaseORM):
+    __tablename__ = "user_profiles"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True)
+    img_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    nickname: Mapped[str] = mapped_column(String(100), nullable=True,)
+
+    user: Mapped["UserORM"] = relationship(
+        back_populates="profile", 
+        foreign_keys=[user_id],
+        remote_side=[UserORM.id]
+    )

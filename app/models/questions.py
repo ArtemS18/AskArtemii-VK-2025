@@ -17,7 +17,8 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    likes_count: Mapped[int] = mapped_column(Integer, default=0, index=True)
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
 
     author: Mapped["UserORM"] = relationship(back_populates="questions")
     tags: Mapped[list["TagORM"]] = relationship(
@@ -27,16 +28,19 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
         back_populates="question"
     )
     likes: Mapped[list["QuestionLikeORM"]] = relationship(
-        secondary="question_likes", back_populates="question"
+        back_populates="question"
     )
 
     @property
     def answers_count(self) -> int:
         return len(self.answers) if self.answers is not None else 0
+    
+    @property
+    def likes_orm_count(self) -> int:
+        return len(self.likes) if self.likes is not None else 0
 
-question_tags = Table(
-    "question_tags",
-    BaseORM.metadata,
-    Column("question_id", ForeignKey("questions.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
-)
+
+class QuestionTagsORM(BaseORM):
+    __tablename__ = "question_tags"
+    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), primary_key=True)
+    tag_id: Mapped[int] = mapped_column(ForeignKey("tags.id"), primary_key=True)

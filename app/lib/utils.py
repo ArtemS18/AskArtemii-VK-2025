@@ -1,27 +1,31 @@
 from math import ceil
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, Callable
 from starlette.requests import Request
 
 WINDOW = 10
 
-def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
+
+def get_offset(total, page, per_page: int = 5):
+    if page < 1:
+        page = 1 
+    pages = max(1, ceil(total / per_page))
+    if page > pages:
+        page = pages
+    start = (page - 1) * per_page
+    return start
+
+def paginate(total, request: Request, per_page: int = 5):
     raw_page = request.query_params.get("page", "1")
     try:
         page = int(raw_page)
     except (TypeError, ValueError):
         page = 1
     if page < 1:
-        page = 1
-
-    total = len(objects_list)  
+        page = 1 
     pages = max(1, ceil(total / per_page))
     if page > pages:
         page = pages
-
-    start = (page - 1) * per_page
-    end = start + per_page
-    items = objects_list[start:end]
 
     has_prev = page > 1
     has_next = page < pages
@@ -41,7 +45,6 @@ def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
         return f"{request.url.path}?page={page}"
 
     return SimpleNamespace(
-        items=items,
         page=page,
         pages=pages,
         has_prev=has_prev,

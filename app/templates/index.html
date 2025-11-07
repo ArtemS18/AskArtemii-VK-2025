@@ -14,12 +14,12 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-12 col-sm-3 col-md-2 col-lg-2 d-flex flex-sm-column align-items-center gap-3">
-                        <img src="{{question.author.img_url}}" alt="Аватар автора" class="img-thumbnail rounded w-75">
+                        <img src="{{question.author.profile.img_url}}" alt="Аватар автора" class="img-thumbnail rounded w-75">
                         <div class="vote-vertical">
                             <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать за ответ">
                                 <i class="bi bi-chevron-up"></i>
                             </button>
-                            <div class="count">{{question.likes}}</div>
+                            <div class="count">{{question.likes_count}}</div>
                             <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать против ответа">
                                 <i class="bi bi-chevron-down"></i>
                             </button>
@@ -37,7 +37,7 @@
                             {%endfor%}
                         </div>
                         <div class="question-meta text-body-secondary mb-2">
-                            <small>Автор: <a href="{{URL_USER}}" class="link-secondary">{{question.author.nickname}}</a></small>
+                            <small>Автор: <a href="{{URL_USER}}" class="link-secondary">{{question.author.login}}</a></small>
                             <small><time datetime="{{question.created_at}}"></time></small>
                         </div>
                         <div class="h6 mb">

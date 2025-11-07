@@ -6,7 +6,12 @@ import pathlib
 FORMAT = "[%(asctime)s.%(msecs)03d] %(levelname)-8s %(module)10s:%(funcName)s:%(lineno)-5d %(message)10s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-LIB_LOGGERS = ["uvicorn.access", "fastapi","uvicorn.error" ]
+LIB_LOGGERS = [
+    "uvicorn.access", 
+    "fastapi",
+    "uvicorn.error", 
+    "sqlalchemy"
+]
 BASE = pathlib.Path(__file__).parent.parent.parent
 LOG_FILE = os.getenv("APP__LOG_FILE", "log/web.log")
 
@@ -19,7 +24,7 @@ def setup_logger():
     os.makedirs(p, exist_ok=True)
     fileHandler = RotatingFileHandler(
         LOG_FILE, 
-        maxBytes=1024*1024*5, #5 MB
+        maxBytes=1024*1024*2, #5 MB
         backupCount=2, 
         encoding="utf-8"
     )
@@ -33,7 +38,7 @@ def setup_logger():
 
     for lib_logger in LIB_LOGGERS:
         log = logging.getLogger(lib_logger)
-        log.setLevel("INFO")
+        log.setLevel(logging.INFO)
         log.addHandler(fileHandler)
         base_logger.info("Setup file logger to %s in %s", lib_logger, LOG_FILE)
     base_logger.info("Setup root logger")
