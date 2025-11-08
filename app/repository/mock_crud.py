@@ -1,8 +1,8 @@
 from typing import Optional
-from app.entities.answers import Answer
-from app.entities.questions import Question
-from app.entities.tags import Tag
-from app.entities.users import User
+from app.schemas.answers import Answer
+from app.schemas.questions import Question
+from app.schemas.tags import Tag
+from app.schemas.users import User
 
 async def mock_get_users() -> list[User]:
     users = []

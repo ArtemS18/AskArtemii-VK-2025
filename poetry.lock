@@ -761,6 +761,22 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "sqlalchemy-to-pydantic"
+version = "0.0.8"
+description = "Tools to convert SQLAlchemy models to Pydantic models"
+optional = false
+python-versions = ">=3.10,<4.0"
+groups = ["main"]
+files = [
+    {file = "sqlalchemy_to_pydantic-0.0.8-py3-none-any.whl", hash = "sha256:e2b13b793b983cc43ec2291bd0dadc731c278017814b98140df8f1c468c4f837"},
+    {file = "sqlalchemy_to_pydantic-0.0.8.tar.gz", hash = "sha256:7af94ecd04c3ca1243975bba5e8e2b2e3928faf9f5ad98a555b0a1b90eec344e"},
+]
+
+[package.dependencies]
+pydantic = ">=2.3.0,<3.0.0"
+sqlalchemy = ">=2.0.20,<3.0.0"
+
+[[package]]
 name = "starlette"
 version = "0.48.0"
 description = "The little ASGI library that shines."
@@ -843,4 +859,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "b4f74dce3cb0b0308287afab2296f9fdef5c97c64a564eca8d514de7d051b6e6"
+content-hash = "347661ee7b89bf96bf0c0eda4b9aa1c142beee0f96743fffa625faea15031c2e"

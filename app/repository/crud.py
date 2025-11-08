@@ -8,7 +8,7 @@ from app.models import QuestionORM, QuestionLikeORM, TagORM
 from app.models.answers import AnswerORM
 from app.models.users import UserORM, UserProfileORM
 
-questions_options = (joinedload(QuestionORM.author).joinedload( UserORM.profile), 
+questions_options = (joinedload(QuestionORM.author).joinedload(UserORM.profile), 
                      joinedload(QuestionORM.tags), 
                      joinedload(QuestionORM.answers))
 @log_call
@@ -22,6 +22,7 @@ async def get_questions_order_by_datetime(session: AsyncSession, limit: int = 10
     questions = raw.scalars().unique().all()
     print(questions)
     return list(questions)
+
 @log_call
 async def get_questions_order_by_hots(session: AsyncSession, limit: int = 10, offset: int =0) -> list[QuestionORM]:
     query = select(QuestionORM).order_by(QuestionORM.likes_count.desc()).options(
@@ -59,20 +60,16 @@ async def delete_question_like(session: AsyncSession, user_id: int, question_id:
         else:
             raise NoResultFound()
 @log_call
-async def get_question_by_id(session: AsyncSession, question_id: int) -> QuestionORM:
+async def get_question_by_id(session: AsyncSession, question_id: int) -> QuestionORM | None:
     query = select(QuestionORM).where(QuestionORM.id == question_id).options(
             joinedload(QuestionORM.author).joinedload( UserORM.profile), 
             joinedload(QuestionORM.tags), 
             joinedload(QuestionORM.answers).joinedload(AnswerORM.author).joinedload( UserORM.profile)
     )
-    # query = select(QuestionORM).where(QuestionORM.id == question_id).options(
-    #         selectinload(QuestionORM.author).selectinload( UserORM.profile), 
-    #         selectinload(QuestionORM.tags), 
-    #         selectinload(QuestionORM.answers).selectinload(AnswerORM.author).selectinload( UserORM.profile)
-    # )
     raw = await session.execute(query)
     question = raw.scalars().unique().one_or_none()
     return question
+
 @log_call
 async def get_questions_by_tag(session: AsyncSession, tag_id: int, limit: int = 10, offset: int =0) -> list[QuestionORM]:
     query = (
@@ -86,6 +83,8 @@ async def get_questions_by_tag(session: AsyncSession, tag_id: int, limit: int = 
     questions = raw.scalars().unique().all()
     return list(questions)
 
+
+@log_call
 async def get_questions_count(session: AsyncSession, tag_id: int | None = None) -> int:
     query = select(func.count(QuestionORM.id.distinct()))
     if tag_id is not None:
@@ -98,12 +97,15 @@ async def get_questions_count(session: AsyncSession, tag_id: int | None = None) 
     return raw.scalar_one()
 
 
+@log_call
 async def get_tags_order_by_popular(session: AsyncSession, limit=10) -> list[TagORM]:
     query = select(TagORM).order_by(TagORM.popular_count.desc()).limit(limit)
     raw = await session.execute(query)
     questions = raw.scalars().all()
     return questions
 
+
+@log_call
 async def get_users_order_by_popular(session: AsyncSession, limit=10) -> list[UserORM]:
     query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit)
     raw = await session.execute(query)
