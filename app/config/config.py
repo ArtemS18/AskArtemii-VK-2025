@@ -5,7 +5,7 @@ import os
 
 class ServerConfig(BaseModel):
     host: str = "localhost"
-    port: int = 8080
+    port: int = 8081
     max_workers: int  = 1
     reload: bool = True
 
