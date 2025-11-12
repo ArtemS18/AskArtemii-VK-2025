@@ -71,6 +71,7 @@ class QuestionView(BaseView):
         tag_id: int, 
         page: int
     ):
+        tag = await crud.get_tag_by_id(self.session, tag_id)
         paginate = await self._get_question_paginate(page, tag_id=tag_id)
         questions = await crud.get_questions_by_tag(
             self.session, 
@@ -79,9 +80,10 @@ class QuestionView(BaseView):
             offset=paginate.offset
         )
         return await self.template_paginate(
-             "hot_questions.html", {
+             "tags_questions.html", {
                 "pagination": paginate,
-                "questions":questions
+                "questions":questions,
+                "tag": tag
                 }
         )
 

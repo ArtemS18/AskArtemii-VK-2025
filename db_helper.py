@@ -1,4 +1,5 @@
 from logging import getLogger
+import logging
 from app.core.db import SessionLocal, init_db, drop_db
 from app.models import (
     UserORM, UserProfileORM, QuestionORM, AnswerORM,
@@ -181,13 +182,16 @@ async def fill_db(ratio = 100):
         log.info("Database filled successfully!")
 
 async def main():
-    ratio = 100
+    ratio = 10
     if len(sys.argv) > 1:
-        if sys.argv[1] == int(sys.argv[1]):
-            ratio = int(sys.argv[1])
+        try:
+            if int(sys.argv[1]):
+                ratio = int(sys.argv[1])
+        except ValueError:
+            return
     await drop_db()
     await init_db()
-    setup_logger()
+    setup_logger(logging.INFO)
     await fill_db(ratio)
 
 if __name__ == "__main__":

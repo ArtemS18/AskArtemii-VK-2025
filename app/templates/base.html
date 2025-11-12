@@ -104,7 +104,7 @@
             <div class="card-header fw-semibold">Лучшие участники</div>
             <ul class="list-group list-group-flush">
               {%for user in best_users%}
-                <li class="list-group-item bg-body"> <a href="{{URL_USER}}/{{user.id}}">{{user.nickname}}</a> — {{user.count}} реп.</li>
+                <li class="list-group-item bg-body"> <a href="{{URL_USER}}/{{user.id}}">{{user.profile.nickname}}</a> — {{user.popular_count}} реп.</li>
               {%endfor%}
             </ul>
           </div>

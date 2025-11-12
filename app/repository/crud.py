@@ -83,6 +83,15 @@ async def get_questions_by_tag(session: AsyncSession, tag_id: int, limit: int = 
     questions = raw.scalars().unique().all()
     return list(questions)
 
+async def get_tag_by_id(session: AsyncSession, tag_id: int) -> TagORM | None:
+    query = (
+        select(TagORM)
+        .where(TagORM.id == tag_id)
+        .limit(1)
+    )
+    raw = await session.execute(query)
+    tag = raw.scalar_one_or_none()
+    return tag
 
 @log_call
 async def get_questions_count(session: AsyncSession, tag_id: int | None = None) -> int:
@@ -107,7 +116,7 @@ async def get_tags_order_by_popular(session: AsyncSession, limit=10) -> list[Tag
 
 @log_call
 async def get_users_order_by_popular(session: AsyncSession, limit=10) -> list[UserORM]:
-    query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit)
+    query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit).options(joinedload(UserORM.profile))
     raw = await session.execute(query)
     users = raw.scalars().all()
     return users

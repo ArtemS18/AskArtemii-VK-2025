@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI
 
 from app.web.lifespan import lifespan
@@ -7,7 +8,7 @@ from app.web.routers import setup_routers
 app = FastAPI(lifespan=lifespan)
 
 def setup_app() -> FastAPI:
-    setup_logger()
+    setup_logger(logging.INFO)
     setup_routers(app)
     
     return app

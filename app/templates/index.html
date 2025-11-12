@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {%block content%}
-    {%block question_title%}
-    <h2>
-        <span class="badge text-bg-primary"> new</span>
-        <span class="badge text-bg-secondary"> 
-            <a class="link-light text-decoration-none" href="{{URL_HOT_QUESTION}}">hot</a> 
-        </span> 
-    </h2>
-    {%endblock%}
+    <h4>
+        {%block question_title%}
+            <span class="badge text-bg-primary"> Новые</span>
+            <span class="badge text-bg-secondary"> 
+                <a class="link-light text-decoration-none" href="{{URL_HOT_QUESTION}}">Популярные</a> 
+            </span> 
+        {%endblock%}
+    </h4>
     {%for question in questions%}
         <div class="card shadow-sm mb-3">
             <div class="card-body">
@@ -38,10 +38,10 @@
                         </div>
                         <div class="question-meta text-body-secondary mb-2">
                             <small>Автор: <a href="{{URL_USER}}" class="link-secondary">{{question.author.login}}</a></small>
-                            <small><time datetime="{{question.created_at}}"></time></small>
+                            <small><time datetime="date">{{question.created_at.strftime("%d-%m-%Y %H:%M")}}</time></small>
                         </div>
                         <div class="h6 mb">
-                            Ответов:{{question.answers_count}}
+                            Ответов: {{question.answers_count}}
                         </div>
                         <p class="mb-0 mt-2 text-secondary">
                             {{question.text}}

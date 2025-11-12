@@ -10,11 +10,11 @@
           <div class="col-12 col-sm-3 col-md-2 col-lg-2 d-flex flex-sm-column align-items-center gap-3">
             <img src="{{question.author.profile.img_url}}" alt="Аватар автора" class="img-thumbnail rounded w-75">
             <div class="vote-vertical">
-                <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать за ответ">
+                <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать за ответ">
                   <i class="bi bi-chevron-up"></i>
                 </button>
                 <div class="count">{{question.likes_count}}</div>
-                <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать против ответа">
+                <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать против ответа">
                   <i class="bi bi-chevron-down"></i>
                 </button>
               </div>
@@ -24,9 +24,9 @@
             <h1 class="h3 mb-2">{{question.title}}</h1>
             <div class="text-body-secondary small mb-2">
               <span class="me-0">Автор:
-                <a href="{{URL_USERS}}/{{question.author.id}}" class="link-secondary">{{question.author.nickname}}</a>
+                <a href="{{URL_USERS}}/{{question.author.id}}" class="link-secondary">{{question.author.profile.nickname}}</a>
               </span>•
-              <time datetime="2025-09-30T10:15">{{question.created_at}}</time>
+              <time datetime="2025-09-30T10:15">{{question.created_at.strftime("%d-%m-%Y %M:%H")}}</time>
             </div>
             <div class="mb-3">
               {%for tag in question.tags %}
@@ -50,11 +50,11 @@
             <div class="col-3 col-sm-2 col-md-2 col-lg-2 d-flex flex-column align-items-center gap-2">
               <img src="{{answer.author.img_url}}" alt="Аватар kate" class="img-thumbnail rounded w-75">
               <div class="vote-vertical">
-                <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать за ответ">
+                <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать за ответ">
                   <i class="bi bi-chevron-up"></i>
                 </button>
                 <div class="count">{{answer.likes_count}}</div>
-                <button class="btn btn-outline-secondary btn-sm" type="button" aria-label="Голосовать против ответа">
+                <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать против ответа">
                   <i class="bi bi-chevron-down"></i>
                 </button>
               </div>
@@ -64,7 +64,7 @@
               <header class="d-flex justify-content-between align-items-center mb-2">
                 <div class="small text-body-secondary">
                   <a href="/users/{{answer.author.id}}" class="link-secondary">{{answer.author.login}}</a> •
-                  <time datetime="2025-09-30T12:40">{{answer.created_at}}</time>
+                  <time datetime="data">{{answer.created_at.strftime("%d-%m-%Y %M:%H")}}</time>
                 </div>
                 {%if answer.is_correct %}
                 <span class="badge text-bg-primary"><i class="bi bi-check2-square me-1"></i>Решение</span>

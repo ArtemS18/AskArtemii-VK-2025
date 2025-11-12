@@ -1,5 +1,5 @@
 from math import ceil
-from typing import TypeVarTuple
+from typing import NamedTuple
 from starlette.requests import Request
 
 WINDOW = 10
@@ -14,7 +14,7 @@ def get_offset(total, page, per_page: int = 5):
     start = (page - 1) * per_page
     return start
 
-class PaginateData(TypeVarTuple):
+class PaginateData(NamedTuple):
     offset: int
     page: int
     pages: int
@@ -23,7 +23,7 @@ class PaginateData(TypeVarTuple):
     prev_page: int
     next_page: int
     
-    window_range: range[int]
+    window_range: range
     has_prev_chunk: bool
     has_next_chunk: bool
     prev_chunk_page: int

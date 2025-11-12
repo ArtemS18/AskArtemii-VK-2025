@@ -15,17 +15,17 @@ LIB_LOGGERS = [
 BASE = pathlib.Path(__file__).parent.parent.parent
 LOG_FILE = os.getenv("APP__LOG_FILE", "log/web.log")
 
-def setup_logger():
+def setup_logger(level: str):
     base_logger = logging.getLogger()
-    base_logger.setLevel("DEBUG")
+    base_logger.setLevel(level)
 
     default_formatter = logging.Formatter(FORMAT, DATE_FORMAT)
     p = os.path.dirname(LOG_FILE)
     os.makedirs(p, exist_ok=True)
     fileHandler = RotatingFileHandler(
         LOG_FILE, 
-        maxBytes=1024*1024*2, #5 MB
-        backupCount=2, 
+        maxBytes=1024*1024, #1 MB
+        backupCount=1, 
         encoding="utf-8"
     )
     fileHandler.setFormatter(default_formatter)
@@ -38,7 +38,7 @@ def setup_logger():
 
     for lib_logger in LIB_LOGGERS:
         log = logging.getLogger(lib_logger)
-        log.setLevel(logging.INFO)
+        log.setLevel(logging.ERROR)
         log.addHandler(fileHandler)
         base_logger.info("Setup file logger to %s in %s", lib_logger, LOG_FILE)
     base_logger.info("Setup root logger")

@@ -1,7 +1,7 @@
 from typing import List, Optional
 import typing
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Integer, String
 
@@ -17,7 +17,7 @@ class UserORM(IDMixin,CreatedMixin, BaseORM):
 
     hashed_password: Mapped[str] = mapped_column(String(30))
     login: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
-    popular_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False, index=True)
+    popular_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     profile: Mapped["UserProfileORM"] = relationship(
         back_populates="user", 
@@ -27,6 +27,9 @@ class UserORM(IDMixin,CreatedMixin, BaseORM):
     answers: Mapped[List["AnswerORM"]] = relationship(back_populates="author")
     answer_likes: Mapped[List["AnswerLikeORM"]] = relationship(back_populates="user")
     question_likes: Mapped[List["QuestionLikeORM"]] = relationship(back_populates="user")
+    __table_args__ = (
+        Index("indx_popular_count_desc", popular_count.desc()),
+    )
 
 class UserProfileORM(IDMixin, BaseORM):
     __tablename__ = "user_profiles"
