@@ -7,8 +7,7 @@ from app.models import (
 )
 import sys
 import random 
-from sqlalchemy import insert, select, func
-
+from sqlalchemy import insert
 from app.web.logger import setup_logger
 
 log = getLogger(__name__)
@@ -23,7 +22,7 @@ def generate_users(ratio: int) -> list[tuple]:
         popular_count = random.randint(0, 1000)
         
         profile_data.append({
-            "img_url": f"http://example.com/images/user_{i}.jpg" if i % 5 == 0 else None,
+            "img_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s",
             "email": f"user_{i}@example.com",
             "nickname": f"Nickname_{i}"
         })

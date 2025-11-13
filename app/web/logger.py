@@ -38,7 +38,7 @@ def setup_logger(level: str):
 
     for lib_logger in LIB_LOGGERS:
         log = logging.getLogger(lib_logger)
-        log.setLevel(logging.ERROR)
+        log.setLevel(logging.INFO) if lib_logger != 'sqlalchemy' else log.setLevel(logging.ERROR)
         log.addHandler(fileHandler)
         base_logger.info("Setup file logger to %s in %s", lib_logger, LOG_FILE)
     base_logger.info("Setup root logger")
