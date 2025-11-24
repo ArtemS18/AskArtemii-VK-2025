@@ -17,7 +17,7 @@ class AnswerORM(IDMixin, CreatedMixin, BaseORM):
 
     text: Mapped[str] = mapped_column(Text, nullable=False)
     # likes: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
-    is_correct: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_correct: Mapped[bool] = mapped_column(Boolean, default=None, nullable=True)
 
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), nullable=False)

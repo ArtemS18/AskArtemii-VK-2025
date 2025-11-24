@@ -39,7 +39,7 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
         str_to_upper=True,
-        env_file=os.getenv("APP__ENV_PATH", ".env")
+        env_file=os.getenv("ENV_PATH", ".env")
     )
     base_dir: str = "app/"
     server: ServerConfig
