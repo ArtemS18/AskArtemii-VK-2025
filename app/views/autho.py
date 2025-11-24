@@ -1,18 +1,12 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
-from app.core.config import config
-from app.web.templating import template_response_base
+from app.views.base import BaseView
 
-router = APIRouter(prefix="")
-api = config.endpoint
 
-@router.get(api.login, response_class=HTMLResponse)
-async def login_view(request: Request):
-    template = await template_response_base(request, "login.html", {})
-    return template
+class AuthoView(BaseView):
+    async def login(self):
+        template = await self.template_response("login.html")
+        return template
 
-@router.get(api.singup, response_class=HTMLResponse)
-async def signup_view(request: Request):
-    template = await template_response_base(request, "signup.html", {})
-    return template
+    async def signup(self):
+        template = await self.template_response("signup.html")
+        return template
 

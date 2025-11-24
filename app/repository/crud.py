@@ -1,72 +1,122 @@
-from typing import Optional
-from app.entities.answers import Answer
-from app.entities.questions import Question
-from app.entities.tags import Tag
-from app.entities.users import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy import delete, insert, select, update, and_, func
+from app.lib.log import log_call
+from app.models import QuestionTagsORM
+from sqlalchemy.orm import joinedload, selectinload
+from app.models import QuestionORM, QuestionLikeORM, TagORM
+from app.models.answers import AnswerORM
+from app.models.users import UserORM, UserProfileORM
 
-async def mock_get_users() -> list[User]:
-    users = []
-    for i in range(5):
-        users.append(User(id=i, login=f"user{i}", email=f"user{i}@gmail.com", nickname=f"User{i}", count=i*10+5%(i+1), img_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"))
-    return users
+questions_options = (joinedload(QuestionORM.author).joinedload(UserORM.profile), 
+                     joinedload(QuestionORM.tags), 
+                     joinedload(QuestionORM.answers))
+@log_call
+async def get_questions_order_by_datetime(session: AsyncSession, limit: int = 10, offset: int =0) -> list[QuestionORM]:
+    query = select(QuestionORM).order_by(QuestionORM.created_at.desc()).options(
+        *questions_options
+    )
+    query = query.limit(limit).offset(offset)
 
-async def mock_get_tags() -> list[Tag]:
-    tags = []
-    names = ("python", "nginx", "java", "swift", "fast_api")
-    for i in range(10):
-        tags.append(Tag(id=i, name=names[i%len(names)], popular=(i*10+1)%10))
-    return tags
+    raw = await session.execute(query)
+    questions = raw.scalars().unique().all()
+    print(questions)
+    return list(questions)
 
-async def mock_get_answers() -> list[Answer]:
-    users = await mock_get_users()
-    answers: list[Answer] = []
-    for i in range(151):
-        answers.append(
-            Answer(
-                id=i, 
-                text=f"Text Question N{i}",
-                author=users[i%len(users)], 
-                votes=(10%(i+1)), 
-                is_correct=False
-            )
+@log_call
+async def get_questions_order_by_hots(session: AsyncSession, limit: int = 10, offset: int =0) -> list[QuestionORM]:
+    query = select(QuestionORM).order_by(QuestionORM.likes_count.desc()).options(
+        *questions_options
+    )
+    query = query.limit(limit).offset(offset)
+
+    raw = await session.execute(query)
+    questions = raw.scalars().unique().all()
+    return list(questions)
+@log_call
+async def create_question_like(session: AsyncSession, user_id: int, question_id: int):
+    query_insert = insert(QuestionLikeORM).values(user_id=user_id, question_id=question_id)
+    query_update = update(QuestionORM).where(QuestionORM.id==question_id).values(likes_count=QuestionORM.likes_count+1)
+
+    async with session.begin() as tr:
+        await tr.session.execute(query_insert)
+        await tr.session.execute(query_update)
+@log_call
+async def delete_question_like(session: AsyncSession, user_id: int, question_id: int):
+    query_delete = delete(QuestionLikeORM).where(
+        and_(QuestionLikeORM.user_id==user_id, QuestionLikeORM.question_id==question_id) 
+    ).returning(QuestionLikeORM.question_id)
+    query_update = update(QuestionORM).where(
+        QuestionORM.id==question_id
+    ).values(likes_count=QuestionORM.likes_count-1).returning(QuestionORM.id)
+
+    async with session.begin() as tr:
+        res = await tr.session.execute(query_delete)
+        if res.scalar_one_or_none():
+            res = await tr.session.execute(query_update)
+            if not res.scalar_one_or_none():
+                await tr.rollback()
+            return 
+        else:
+            raise NoResultFound()
+@log_call
+async def get_question_by_id(session: AsyncSession, question_id: int) -> QuestionORM | None:
+    query = select(QuestionORM).where(QuestionORM.id == question_id).options(
+            joinedload(QuestionORM.author).joinedload( UserORM.profile), 
+            joinedload(QuestionORM.tags), 
+            joinedload(QuestionORM.answers).joinedload(AnswerORM.author).joinedload( UserORM.profile)
+    )
+    raw = await session.execute(query)
+    question = raw.scalars().unique().one_or_none()
+    return question
+
+@log_call
+async def get_questions_by_tag(session: AsyncSession, tag_id: int, limit: int = 10, offset: int =0) -> list[QuestionORM]:
+    query = (
+        select(QuestionORM)
+        .join(QuestionTagsORM, QuestionORM.id == QuestionTagsORM.question_id)
+        .join(TagORM, QuestionTagsORM.tag_id == TagORM.id)
+        .where(TagORM.id == tag_id)
+        .options(*questions_options)
         )
-    return answers
+    raw = await session.execute(query)
+    questions = raw.scalars().unique().all()
+    return list(questions)
 
-async def mock_get_questions() -> list[Question]:
-    questions = []
-    tags = await mock_get_tags()
-    users = await mock_get_users()
-    all_answers = await mock_get_answers()
-    for i in range(100):
-        answers = all_answers[i % len(all_answers):(i % len(all_answers))+ (i%5)+1].copy()
-        answers[0].is_correct = True
-        questions.append(
-            Question(
-                id=i, 
-                title=f"Question N{i}", 
-                text=f"Text Question N{i}",
-                author=users[i%len(users)], 
-                likes=(10%(i+1)), 
-                tags=tags[i%len(tags): (i%len(tags))+3],
-                answers_count=len(answers),
-                answers=answers
-            )
+async def get_tag_by_id(session: AsyncSession, tag_id: int) -> TagORM | None:
+    query = (
+        select(TagORM)
+        .where(TagORM.id == tag_id)
+        .limit(1)
+    )
+    raw = await session.execute(query)
+    tag = raw.scalar_one_or_none()
+    return tag
+
+@log_call
+async def get_questions_count(session: AsyncSession, tag_id: int | None = None) -> int:
+    query = select(func.count(QuestionORM.id.distinct()))
+    if tag_id is not None:
+        query = (
+            query.join(QuestionTagsORM, QuestionORM.id==QuestionTagsORM.question_id)
+            .join(TagORM, QuestionTagsORM.tag_id == TagORM.id)
+            .where(TagORM.id == tag_id)
         )
+    raw = await session.execute(query)
+    return raw.scalar_one()
 
+
+@log_call
+async def get_tags_order_by_popular(session: AsyncSession, limit=10) -> list[TagORM]:
+    query = select(TagORM).order_by(TagORM.popular_count.desc()).limit(limit)
+    raw = await session.execute(query)
+    questions = raw.scalars().all()
     return questions
-    
 
-async def get_count_questions() -> int:
-    questions = await mock_get_questions()
-    return len(questions)
 
-async def mock_get_questions_by_tag(tag_id: int) -> list[Question | None]:
-    all_questions = await mock_get_questions()
-    res: list[Question | None] = []
-    for q in all_questions:
-        for tag in q.tags: 
-            if tag.id == tag_id:
-                res.append(q)
-                break
-    return res
-
+@log_call
+async def get_users_order_by_popular(session: AsyncSession, limit=10) -> list[UserORM]:
+    query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit).options(joinedload(UserORM.profile))
+    raw = await session.execute(query)
+    users = raw.scalars().all()
+    return users

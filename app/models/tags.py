@@ -1,6 +1,6 @@
 import typing
 
-from sqlalchemy import Integer
+from sqlalchemy import Index, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import String
 
@@ -16,5 +16,8 @@ class TagORM(IDMixin, BaseORM):
 
     questions: Mapped[list["QuestionORM"]] = relationship(
         secondary="question_tags", back_populates="tags"
+    )
+    __table_args__ = (
+        Index("idx_popular_count_desc", popular_count.desc()),
     )
 

@@ -1,27 +1,45 @@
 from math import ceil
-from types import SimpleNamespace
-from typing import Any
+from typing import NamedTuple
 from starlette.requests import Request
 
 WINDOW = 10
 
-def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
-    raw_page = request.query_params.get("page", "1")
-    try:
-        page = int(raw_page)
-    except (TypeError, ValueError):
-        page = 1
-    if page < 1:
-        page = 1
 
-    total = len(objects_list)  
+def get_offset(total, page, per_page: int = 5):
+    if page < 1:
+        page = 1 
     pages = max(1, ceil(total / per_page))
     if page > pages:
         page = pages
-
     start = (page - 1) * per_page
-    end = start + per_page
-    items = objects_list[start:end]
+    return start
+
+class PaginateData(NamedTuple):
+    offset: int
+    page: int
+    pages: int
+    has_prev: bool
+    has_next: bool
+    prev_page: int
+    next_page: int
+    
+    window_range: range
+    has_prev_chunk: bool
+    has_next_chunk: bool
+    prev_chunk_page: int
+    next_chunk_page: int
+
+def paginate(total: int, page: int =1, per_page: int = 5):
+    try:
+        page = int(page)
+    except (TypeError, ValueError):
+        page = 1
+    if page < 1:
+        page = 1 
+    pages = max(1, ceil(total / per_page))
+    if page > pages:
+        page = pages
+    start = (page - 1) * per_page
 
     has_prev = page > 1
     has_next = page < pages
@@ -37,11 +55,8 @@ def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
     prev_chunk_page = max(1, first_in_window - WINDOW)
     next_chunk_page = min(pages, first_in_window + WINDOW)
 
-    def url_with_page(page: int) -> str:
-        return f"{request.url.path}?page={page}"
-
-    return SimpleNamespace(
-        items=items,
+    return PaginateData(
+        offset=start,
         page=page,
         pages=pages,
         has_prev=has_prev,
@@ -54,6 +69,4 @@ def paginate(objects_list: list[Any], request: Request, per_page: int = 5):
         has_next_chunk=has_next_chunk,
         prev_chunk_page=prev_chunk_page,
         next_chunk_page=next_chunk_page,
-
-        url_with_page=url_with_page,
     )
