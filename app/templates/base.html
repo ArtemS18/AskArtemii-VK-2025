@@ -43,22 +43,22 @@
 
           <ul class="navbar-nav ms-auto d-flex">
                {% block user%}
-               {%if user%}
+               {%if user_profile%}
               <li class="nav-item"><a class="nav-link" href="{{URL_ASK}}">Задать вопрос</a></li>
               <li class="nav-item">
                   <div class="d-flex align-items-center"> 
-                      <a class="nav-link" href="{{URL_USER}}/me">
+                      <a class="nav-link" href="/profile/edit">
                           <img id="avatarPreview"
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
+                              src={{user_profile.img_url}}
                               alt="Avatar preview"
-                              class="img-thumbnail rounded"
-                              width="50" height="50">
+                              class="img-thumbnail"
+                              style="object-fit: cover; width: 50px; height: 50px;">
                       </a> 
                       <div class="d-flex flex-column align-items-center">
                           <label class="nav-item">
-                              {{user.nickname}}
+                              {{user_profile.nickname}}
                           </label>
-                          <a href="/login">
+                          <a href="/logout">
                               Выйти
                           </a>
                       </div>
@@ -83,7 +83,7 @@
 
     <main class="container my-4">
       <div class="row gy-5">
-        <div class="col-lg-8 order-2 order-lg-1">
+        <div class="col-lg-7 order-2 order-lg-1">
             {%block content%} 
             {%endblock%}
         </div>

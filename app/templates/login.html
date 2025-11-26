@@ -5,13 +5,13 @@ Login
 {%endblock%}
 
 {% block form_content %}
-  <form action="#" method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+  <form action="/login" method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
     <div class="col-12">
         <div class="d-flex align-items-center justify-content-between gap-2">
-            <label for="login" class="form-label col-sm-3">Login</label>
+            <label for="email" class="form-label col-sm-3">Email</label>
             <div class="col-sm-9">
-                <input type="login" id="login" class="form-control" required>
-                <div class="invalid-feedback">Введите корректный login.</div>
+                <input type="email" id="email"  name="email" value="{{email}}" class="form-control" required>
+                <div class="invalid-feedback">Введите корректный email.</div>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@ Login
         <div class="d-flex align-items-center justify-content-between gap-2">
             <label for="password" class="form-label col-sm-3">Password</label>
             <div class="col-sm-9">
-                <input type="password" id="password" class="form-control" required>
+                <input type="password" id="password" name="password"  value="{{password}}" class="form-control" required>
                 <div class="invalid-feedback">Введите корректный password.</div>
             </div>
         </div>

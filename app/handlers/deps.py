@@ -1,10 +1,14 @@
 from typing import Annotated
-from fastapi import Depends, Request
+from fastapi import Cookie, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.config import config
+from app.schemas.user import User
 from app.views.questions import QuestionView
 from app.views.autho import AuthoView
+from urllib.parse import quote
 from app.views.users import UserView
 from app.core.db import SessionLocal
+from app.repository.redis import sessions
 
 async def get_db():
     async with SessionLocal() as session:
@@ -26,3 +30,27 @@ async def get_users_view(req: Request, session: SessionDep):
     return UserView(session, req)
 
 UserViewDep = Annotated[UserView, Depends(get_users_view)]
+
+
+async def get_current_user(req: Request) -> User | None:
+    user_session= req.cookies.get("session")
+    
+    dest = req.url.path
+    if req.url.query:
+        dest = f"{dest}?{req.url.query}"
+
+    dest_q = quote(dest, safe="")
+    location = f"{config.endpoint.login}?continue_url={dest_q}"
+    exp = HTTPException(status_code=status.HTTP_303_SEE_OTHER, headers={
+            "Location": location
+        })
+    
+    if not user_session:
+        raise exp
+    
+    user = await sessions.get_session(user_session)
+
+    if not user:
+        raise exp
+    
+    return user

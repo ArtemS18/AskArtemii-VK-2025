@@ -10,46 +10,66 @@
         {%endblock%}
     </h4>
     {%for question in questions%}
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-12 col-sm-3 col-md-2 col-lg-2 d-flex flex-sm-column align-items-center gap-3">
-                        <img src="{{question.author.profile.img_url}}" alt="Аватар автора" class="img-thumbnail rounded w-75">
-                        <div class="vote-vertical">
-                            <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать за ответ">
-                                <i class="bi bi-chevron-up"></i>
-                            </button>
-                            <div class="count">{{question.likes_count}}</div>
-                            <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать против ответа">
-                                <i class="bi bi-chevron-down"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm">
-                        <a class="h5 link-light text-decoration-none d-block mb-2" href="{{URL_QUESTION}}/{{question.id}}">
-                            {{question.title}}
-                        </a>
-                        <div class="mb-2">
-                            {%for tag in question.tags%}
-                                <span class="badge text-bg-secondary">
-                                    <a class="text-decoration-none link-light" href="{{URL_HOT_TAGS}}/{{tag.id}}">{{tag.name}}</a>
-                                </span>
-                            {%endfor%}
-                        </div>
-                        <div class="question-meta text-body-secondary mb-2">
-                            <small>Автор: <a href="{{URL_USER}}" class="link-secondary">{{question.author.login}}</a></small>
-                            <small><time datetime="date">{{question.created_at.strftime("%d-%m-%Y %H:%M")}}</time></small>
-                        </div>
-                        <div class="h6 mb">
-                            Ответов: {{question.answers_count}}
-                        </div>
-                        <p class="mb-0 mt-2 text-secondary">
-                            {{question.text}}
-                        </p>
+      <article class="card mb-3 shadow-sm">
+        <div class="card-body p-3">
+          <div class="d-flex gap-3 flex-column">
+            <div class="d-flex">
+                <div>
+                    <div class="me-3">
+                    <a href="{{ URL_USER }}/{{ question.author.id }}">
+                        <img src="{{ question.author.profile.img_url or url_for('static', path='/images/default-avatar.png') }}"
+                            alt="avatar"
+                            class="rounded-circle"
+                            width="56" height="56"
+                            style="object-fit:cover;">
+                    </a>
                     </div>
                 </div>
+                <header>
+                    <div>
+                    <a href="{{ URL_QUESTION }}/{{ question.id }}" class="text-decoration-none">
+                        <h5 class="mb-1 text-light">{{ question.title }}</h5>
+                    </a>
+                    <div class="mb-2">
+                        {% for tag in question.tags %}
+                        <a class="badge bg-dark text-decoration-none me-1" href="{{ URL_HOT_TAGS }}/{{ tag.id }}">{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                    </div>
+              </header>
             </div>
+               <div>
+                    <div class="small text-body-secondary d-flex align-items-center" style="gap:.6rem;">
+                        <a class="d-flex align-items-center text-decoration-none link-secondary" href="{{ URL_USER }}/{{ question.author.id }}">
+                            <strong class="me-2 small">{{ question.author.profile.nickname }}</strong>
+                        </a>
+                        <span class="text-muted">•</span>
+                        <time datetime="{{ question.created_at.isoformat() }}">{{ question.created_at.strftime("%d-%m-%Y %H:%M") }}</time>
+                    </div>
+                </div>
+            <div class="flex-grow-1">
+              
+              <p class="mb-2 text-muted small" style="line-height:1.4; max-height:4.2em; overflow:hidden;">
+                {{ question.text }}
+              </p>
+
+               <div class="d-flex align-items-center" style="gap:.5rem;">
+                  <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" type="button" aria-label="like">
+                    <i class="bi bi-hand-thumbs-up me-1"></i>
+                    <span class="small text-muted">{{ question.likes_count or 0 }}</span>
+                  </button>
+
+                  <a href="{{ URL_QUESTION }}/{{ question.id }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center text-decoration-none">
+                    <i class="bi bi-chat-left-dots me-1"></i>
+                    <span class="small text-muted">{{ question.answers_count or 0 }}</span>
+                  </a>
+                </div>
+
+             
+            </div>
+          </div>
         </div>
+      </article>
     {%endfor%}
     {%block pagination%}
       {% include 'pagination.html' %}

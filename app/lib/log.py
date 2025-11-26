@@ -4,9 +4,8 @@ import time
 from typing import Any, Callable, Coroutine, TypeVar
 
 
-type Function = Callable[..., Coroutine[Any, Any, None]]
 
-def log_call(func: Function) -> Function:
+def log_call[T](func: Callable[..., Coroutine[Any, Any, T]]) -> Callable[..., Coroutine[Any, Any, T]]:
     @wraps(func)
     async def wrapper(*args, **kwargs):
         log = getLogger(func.__module__)

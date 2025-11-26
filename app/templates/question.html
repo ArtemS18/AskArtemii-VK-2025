@@ -8,7 +8,7 @@
       <div class="card-body">
         <div class="row g-3">
           <div class="col-12 col-sm-3 col-md-2 col-lg-2 d-flex flex-sm-column align-items-center gap-3">
-            <img src="{{question.author.profile.img_url}}" alt="Аватар автора" class="img-thumbnail rounded w-75">
+            <img src="{{question.author.profile.img_url}}" alt="Аватар автора" class="img-thumbnail rounded" style="object-fit: cover; width: 50px; height: 50px;">
             <div class="vote-vertical">
                 <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать за ответ">
                   <i class="bi bi-chevron-up"></i>
@@ -26,7 +26,7 @@
               <span class="me-0">Автор:
                 <a href="{{URL_USERS}}/{{question.author.id}}" class="link-secondary">{{question.author.profile.nickname}}</a>
               </span>•
-              <time datetime="2025-09-30T10:15">{{question.created_at.strftime("%d-%m-%Y %M:%H")}}</time>
+              <time datetime="2025-09-30T10:15">{{question.created_at.strftime("%d-%m-%Y %H:%M")}}</time>
             </div>
             <div class="mb-3">
               {%for tag in question.tags %}
@@ -48,7 +48,7 @@
         <div class="card-body">
           <div class="row g-3 align-items-start">
             <div class="col-3 col-sm-2 col-md-2 col-lg-2 d-flex flex-column align-items-center gap-2">
-              <img src="{{answer.author.img_url}}" alt="Аватар kate" class="img-thumbnail rounded w-75">
+              <img src="{{answer.author.profile.img_url}}" alt="Аватар kate" class="img-thumbnail rounded" style="object-fit: cover; width: 50px; height: 50px;">
               <div class="vote-vertical">
                 <button class="btn btn-outline-secondary btn-sm h-75 d-flex align-items-center justify-content-center" type="button" aria-label="Голосовать за ответ">
                   <i class="bi bi-chevron-up"></i>
@@ -63,8 +63,8 @@
             <div class="col">
               <header class="d-flex justify-content-between align-items-center mb-2">
                 <div class="small text-body-secondary">
-                  <a href="/users/{{answer.author.id}}" class="link-secondary">{{answer.author.login}}</a> •
-                  <time datetime="data">{{answer.created_at.strftime("%d-%m-%Y %M:%H")}}</time>
+                  <a href="/users/{{answer.author.id}}" class="link-secondary">{{answer.author.profile.nickname}}</a> •
+                  <time datetime="data">{{answer.created_at.strftime("%d-%m-%Y %H:%M")}}</time>
                 </div>
                 {%if answer.is_correct %}
                 <span class="badge text-bg-primary"><i class="bi bi-check2-square me-1"></i>Решение</span>
@@ -90,10 +90,10 @@
       <!-- Форма нового ответа -->
       <div class="card shadow-sm">
         <div class="card-body">
-          <form action="#" method="post" class="needs-validation" novalidate>
+          <form action="{{ URL_QUESTION }}/{{ question.id }}/answer" method="post" class="needs-validation" novalidate>
             <div class="mb-3">
               <label for="answer" class="form-label">Ваш ответ</label>
-              <textarea id="answer" class="form-control" rows="6" placeholder="Напишите развернутый ответ…" required></textarea>
+              <textarea id="answer" name="answer" class="form-control" rows="6" placeholder="Напишите развернутый ответ…" required></textarea>
               <div class="invalid-feedback">Пожалуйста, введите текст ответа.</div>
             </div>
             <button class="btn btn-primary" type="submit">Отправить</button>

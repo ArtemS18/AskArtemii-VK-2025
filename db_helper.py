@@ -23,12 +23,11 @@ def generate_users(ratio: int) -> list[tuple]:
         
         profile_data.append({
             "img_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s",
-            "email": f"user_{i}@example.com",
             "nickname": f"Nickname_{i}"
         })
         
         user_data.append({
-            "login": login,
+            "email": f"user_{i}@example.com",
             "hashed_password": hashed_password,
             "popular_count": popular_count
             # profile_id будет установлен после создания профилей

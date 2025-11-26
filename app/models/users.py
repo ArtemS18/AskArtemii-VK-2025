@@ -15,8 +15,9 @@ if typing.TYPE_CHECKING:
 class UserORM(IDMixin,CreatedMixin, BaseORM):
     __tablename__ = "users"
 
-    hashed_password: Mapped[str] = mapped_column(String(30))
-    login: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
+    hashed_password: Mapped[str] = mapped_column(String(256), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    # login: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     popular_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     profile: Mapped["UserProfileORM"] = relationship(
@@ -35,7 +36,7 @@ class UserProfileORM(IDMixin, BaseORM):
     __tablename__ = "user_profiles"
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True)
     img_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    
     nickname: Mapped[str] = mapped_column(String(100), nullable=True,)
 
     user: Mapped["UserORM"] = relationship(

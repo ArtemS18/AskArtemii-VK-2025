@@ -27,7 +27,7 @@ class DBConfig(BaseModel):
 class EndpointConfig(BaseModel):
     base: str = "/"
     question: str = "/questions"
-    user: str = "/users"
+    user: str = "/profile"
     ask: str = "/asks"
     tags: str = "/tags"
     hot: str="/hot"
@@ -54,7 +54,9 @@ class Config(BaseSettings):
 config = Config()
 
 
+api_path = config.endpoint
 
+BASE_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
 
 # BASE_APP_DIR = "app/"
 

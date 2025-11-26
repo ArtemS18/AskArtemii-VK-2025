@@ -19,7 +19,12 @@ dependencies = [
     "sqlalchemy (>=2.0.44,<3.0.0)",
     "asyncpg (>=0.30.0,<0.31.0)",
     "sqlalchemy-to-pydantic (>=0.0.8,<0.0.9)",
-    "alembic (>=1.17.1,<2.0.0)"
+    "alembic (>=1.17.1,<2.0.0)",
+    "bcrypt (>=5.0.0,<6.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "aiofiles (>=25.1.0,<26.0.0)",
+    "cachetools (>=6.2.2,<7.0.0)",
+    "redis (>=7.1.0,<8.0.0)"
 ]
 
 
