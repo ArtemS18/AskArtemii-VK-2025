@@ -20,8 +20,22 @@ services:
       - redis_data_vk:/data
     command: ["redis-server", "--requirepass", "admin"]
 
+  minio: 
+    image:
+      quay.io/minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment: 
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    volumes:
+      - minio_data_vk:/data
+    command: server /data --console-address ":9001"
+
 
 
 volumes:
   postgres_data_vk:
   redis_data_vk:
+  minio_data_vk:
