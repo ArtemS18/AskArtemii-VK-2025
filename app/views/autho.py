@@ -38,9 +38,7 @@ class AuthoView(BaseView):
         if not pwd.verify_password(password, user.hashed_password):
            context["error"] =ErrorTemplate(text="Invalid email or password.")
            return await self.template_response("login.html", context)
-        
-        
-        
+
         dest = continue_url or api_path.base
         response = RedirectResponse(dest, status_code=status.HTTP_303_SEE_OTHER)
         await self._set_session(response, User(

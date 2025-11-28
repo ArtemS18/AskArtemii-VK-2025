@@ -1,10 +1,19 @@
 from sqlalchemy import select, update
+from app.core.db import SessionLocal
 from app.lib.log import log_call
 from app.models.users import UserORM, UserProfileORM
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.user import UserUpdate, UserWrite
+
+@log_call
+async def get_users_order_by_popular(limit=10) -> list[UserORM]:
+    async with SessionLocal() as session:
+        query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit).options(joinedload(UserORM.profile))
+        raw = await session.execute(query)
+        users = raw.scalars().all()
+        return users
 
 @log_call
 async def get_user_by_email(session: AsyncSession, email: str) -> UserORM | None:

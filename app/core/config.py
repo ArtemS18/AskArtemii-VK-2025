@@ -23,6 +23,16 @@ class DBConfig(BaseModel):
     @property
     def url(self):
         return f"{self.driver}://{self.login}:{self.password}@{self.host}:{self.port}/{self.base_db}"
+    
+class MinioConfig(BaseModel):
+    host: str = "localhost"
+    port: int = 9000
+    access_key: str = "minio"
+    secret_key: str = "minio123"
+
+    @property
+    def url(self):
+        return f"http://{self.host}:{self.port}"
 
 class EndpointConfig(BaseModel):
     base: str = "/"
@@ -46,6 +56,7 @@ class Config(BaseSettings):
     template: TemplateConfig
     endpoint: EndpointConfig
     db: DBConfig
+    minio: MinioConfig
 
     @property
     def template_path(self):
@@ -57,12 +68,3 @@ config = Config()
 api_path = config.endpoint
 
 BASE_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4JCuHyuURcCyeNEc9v4iOma3HVgZgDSMaIQ&s"
-
-# BASE_APP_DIR = "app/"
-
-# TEMPLATE_PATH = BASE_APP_DIR + "templates"
-
-# HOST = os.getenv("APP__LOCALHOST","localhost")
-# PORT = os.getenv("APP__PORT",8080)
-# MAX_WORKERS = os.getenv("APP__MAX_WORKERS",1)
-# RELOAD = os.getenv("APP__RELOAD",True)

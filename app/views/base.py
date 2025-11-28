@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import config, api_path
 from app.lib.log import log_call
-from app.repository.db import user as crud
-from app.repository.db import question
+from app.repository.db import user as user_crud
+from app.repository.db import tags as tags_crud
 from app.repository.redis import sessions
 
 log = getLogger(__name__)
@@ -52,8 +52,8 @@ class BaseView():
         return uid_i
 
     async def _get_layout_data(self) -> dict[str, Any]:
-        best_users = await question.get_users_order_by_popular()
-        popular_tags = await question.get_tags_order_by_popular()
+        best_users = await user_crud.get_users_order_by_popular()
+        popular_tags = await tags_crud.get_tags_order_by_popular()
         user = None
         key = self.request.cookies.get("session")
         if key is not None:
