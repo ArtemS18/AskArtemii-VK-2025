@@ -2,7 +2,6 @@
 name = "vk-web"
 version = "0.1.0"
 description = ""
-package-mode = false
 authors = [
     {name = "Artemiy",email = "artemsikor18@gmail.com"}
 ]
@@ -29,7 +28,11 @@ dependencies = [
     "minio (>=7.2.20,<8.0.0)"
 ]
 
+[tool.poetry]
+package-mode = false
 
+[tool.poetry.scripts]
+app = 'py main.py'
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
