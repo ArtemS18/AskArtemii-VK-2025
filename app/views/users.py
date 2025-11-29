@@ -37,9 +37,7 @@ class UserView(BaseView):
     
     async def _upload_avatar(self, file: UploadFile, user_id: int):
         await self.user_avatars.create_bucket()
-
-        ext = Path(file.filename).suffix or ".bin"
-        url = await self.user_avatars.save_avatar_with_url(file.file, user_id, ext)
+        url = await self.user_avatars.save_avatar_with_url(file.file, f"avatar_user_{user_id}", file.headers.get("content-type"))
 
         return url
 
@@ -53,8 +51,8 @@ class UserView(BaseView):
         )
 
     async def profile_edit_post(self, email: str, nickname: str, avatar: UploadFile, user_id: int):
-        if self._get_size_of_uploadfile(avatar) > MAX_FILE_SIZE:
-            return await self.profile_edit_get(user_id)
+        # if await self._get_size_of_uploadfile(avatar) > MAX_FILE_SIZE:
+        #     return await self.profile_edit_get(user_id)
         
         img_url = await self._upload_avatar(avatar, user_id) if avatar and avatar.filename else None
         user = await crud.update_user(

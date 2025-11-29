@@ -12,7 +12,7 @@ async def create_session(session_key, user: User) -> None:
         "img_url": user.img_url
         }
     )
-    ttl = 1 * 60
+    ttl = 60*60
     await client.expire(name=user_key, time=ttl)
 
 async def get_session(session_key) -> User | None:

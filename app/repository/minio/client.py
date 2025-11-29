@@ -1,3 +1,4 @@
+import json
 from typing import AsyncGenerator
 from aiobotocore.session import get_session, AioBaseClient
 from contextlib import asynccontextmanager
@@ -22,19 +23,36 @@ class MinioClient:
         ) as client:
             yield client
 
-    async def create_bucket(self, bucket_name: str):
+    async def create_public_bucket(self, bucket_name: str):
+        policy = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Sid": "AllowPublicRead",
+                        "Effect": "Allow",
+                        "Principal": "*",
+                        "Action": ["s3:GetObject"],
+                        "Resource": [f"arn:aws:s3:::{bucket_name}/*"],
+                    }
+                ],
+            }
+       
         async with self.get_client() as client:
             try:
                 await client.head_bucket(Bucket=bucket_name)
             except (ClientError) as e:
                 if e.response['Error']['Code'] == '404':
                     await client.create_bucket(Bucket=bucket_name)
+            await client.put_bucket_policy(
+                Bucket=bucket_name,
+                Policy=json.dumps(policy),
+            )
 
     async def put_object(self, bucket_name: str, key: str, body: bytes, content_type: str):
         async with self.get_client() as client:
-            client.put_object(Bucket=bucket_name, Key=key, Body=body, ContentType=content_type)
+            await client.put_object(Bucket=bucket_name, Key=key, Body=body, ContentType=content_type)
 
-    async def generate_url(self, bucket_name: str, object_name: str, expires: int = -1):
+    async def generate_expiring_url(self, bucket_name: str, object_name: str, expires: int = 3000):
         async with self.get_client() as client:
             url = await client.generate_presigned_url(
                     'get_object',
@@ -45,3 +63,5 @@ class MinioClient:
                     ExpiresIn=expires
                 )
             return url
+    def generate_public_url(self, bucket_name: str, object_name: str):
+        return f"{self.url.rstrip("/")}/{bucket_name}/{object_name}"
