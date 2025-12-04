@@ -54,16 +54,6 @@ class BaseView():
             return None
         return uid_i
     
-    async def csrf_securaty(self, csrf_token) -> bool:
-        if csrf_token:
-            key = self.request.cookies.get("session")
-            if key is not None:
-                user_session: UserSession = await self.store.redis.get_session(key)
-                if user_session:
-                    return csrf_token == user_session.csrf_token
-        return False
-    
-        
     async def _set_session(self, resp: Response, id_: int, nickname: str, img_url: str):
         session_key = get_random_seq()
         csrf_token = uuid.uuid4()
@@ -79,7 +69,8 @@ class BaseView():
         key = self.request.cookies.get("session")
         if key is not None:
             user_session = await self.store.redis.get_session(key)
-            csrf_token = user_session.csrf_token
+            if user_session:
+                csrf_token = user_session.csrf_token
         return {
             "best_users": best_users, 
             "popular_tags": popular_tags ,

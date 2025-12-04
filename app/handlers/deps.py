@@ -1,5 +1,7 @@
+from logging import getLogger
 from typing import Annotated
-from fastapi import Depends, HTTPException, Request, status
+from uuid import UUID
+from fastapi import Depends, Form, HTTPException, Request, status
 from app.core.config import config
 from app.repository import Store, get_store
 from app.schemas.user import UserSession
@@ -7,6 +9,8 @@ from app.views.questions import QuestionView
 from app.views.autho import AuthoView
 from urllib.parse import quote
 from app.views.users import UserView
+
+log = getLogger(__name__)
 
 
 StoreDep = Annotated[Store, Depends(get_store)]
@@ -48,3 +52,16 @@ async def get_current_user(req: Request,  store: StoreDep) -> UserSession :
 AuthoViewDep = Annotated[AuthoView, Depends(get_autho_view)]
 QuestionViewDep = Annotated[QuestionView, Depends(get_question_view)]
 UserViewDep = Annotated[UserView, Depends(get_users_view)]
+
+async def csrf_validate(request: Request, store: StoreDep, csrf_token: UUID = Form(...)) -> bool:
+    exp = HTTPException(status_code=401, detail="CSRF validation error")
+    if csrf_token:
+        if key := request.cookies.get("session"):
+            user_session: UserSession = await store.redis.get_session(key)
+            log.info(user_session.csrf_token)
+            if user_session:
+                if csrf_token == user_session.csrf_token:
+                    return True
+    raise exp
+
+

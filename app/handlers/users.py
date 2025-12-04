@@ -2,7 +2,7 @@ from typing import Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
-from app.handlers.deps import UserViewDep, get_current_user
+from app.handlers.deps import UserViewDep, csrf_validate, get_current_user
 from app.core.config import config
 from pydantic import BaseModel
 
@@ -21,14 +21,12 @@ async def user_settings_view(view: UserViewDep, user: UserSession = Depends(get_
     template = await view.profile_edit_get(user.id)
     return template
 
-@router.post("/edit")
+@router.post("/edit", dependencies=[Depends(csrf_validate)])
 async def user_settings_post(
     view: UserViewDep,
-    avatar: UploadFile | None = File(None),
+    avatar: UploadFile = File(None),
     email: str = Form(None),
     nickname: str = Form(None),
-    csrf_token: UUID = Form(None),
     user: UserSession = Depends(get_current_user),
 ):
-    if await view.csrf_securaty(csrf_token):
-        return await view.profile_edit_post(email, nickname, avatar,  user.id)
+    return await view.profile_edit_post(email, nickname, avatar,  user.id)
