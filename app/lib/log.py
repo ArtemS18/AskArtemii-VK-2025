@@ -6,6 +6,7 @@ from typing import Any, Callable, Coroutine, TypeVar
 
 
 def log_call[T](func: Callable[..., Coroutine[Any, Any, T]]) -> Callable[..., Coroutine[Any, Any, T]]:
+
     @wraps(func)
     async def wrapper(*args, **kwargs):
         log = getLogger(func.__module__)

@@ -12,8 +12,7 @@ router = APIRouter(prefix="")
 
 @router.get(api_path.login, response_class=HTMLResponse)
 async def login_view(view: AuthoViewDep):
-    template = await view.login()
-    return template
+    return await view.login_page()
 
 @router.post(api_path.login)
 async def login_post_view(
@@ -26,15 +25,15 @@ async def login_post_view(
 
 @router.get(api_path.singup, response_class=HTMLResponse)
 async def signup_get(view: AuthoViewDep):
-    return await view.template_response("signup.html")
+    return await view.singup_page()
 
 @router.post(api_path.singup)
-async def signup_view(
+async def signup_post(
     view: AuthoViewDep,
     form: UserForm = Form(...)
 ):
-    return await view.signup(form)
+    return await view.signup_post(form)
 
 @router.get("/logout")
-async def logout_view(view: AuthoViewDep, request: Request):
+async def logout_view(view: AuthoViewDep):
     return await view.logout()

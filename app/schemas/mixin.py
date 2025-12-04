@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from uuid import UUID
 from datetime import datetime, timezone
 
 class DateTimeMixin(BaseModel):
@@ -7,5 +7,8 @@ class DateTimeMixin(BaseModel):
 
 class IDMixin(BaseModel):
     id: int
+
+class CSRFMixin(BaseModel):
+    csrf_token: UUID
     
     

@@ -1,11 +1,12 @@
 from typing import Optional
+from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
 from app.handlers.deps import UserViewDep, get_current_user
 from app.core.config import config
 from pydantic import BaseModel
 
-from app.schemas.user import User
+from app.schemas.user import UserSession
 
 api = config.endpoint
 router = APIRouter(prefix=api.user)
@@ -16,7 +17,7 @@ class UserEditForm(BaseModel):
     avatar: Optional[str] = None
 
 @router.get("/edit", response_class=HTMLResponse)
-async def user_settings_view(view: UserViewDep, user: User = Depends(get_current_user)):
+async def user_settings_view(view: UserViewDep, user: UserSession = Depends(get_current_user)):
     template = await view.profile_edit_get(user.id)
     return template
 
@@ -26,7 +27,8 @@ async def user_settings_post(
     avatar: UploadFile | None = File(None),
     email: str = Form(None),
     nickname: str = Form(None),
-    user: User = Depends(get_current_user),
+    csrf_token: UUID = Form(None),
+    user: UserSession = Depends(get_current_user),
 ):
-    
-    return await view.profile_edit_post(email, nickname, avatar,  user.id)
+    if await view.csrf_securaty(csrf_token):
+        return await view.profile_edit_post(email, nickname, avatar,  user.id)

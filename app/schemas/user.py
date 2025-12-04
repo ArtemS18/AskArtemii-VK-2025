@@ -1,9 +1,10 @@
+from app.schemas.mixin import CSRFMixin
 from .base import BaseModel
 
 class BaseUser(BaseModel):
     nickname: str
 
-class User(BaseUser):
+class UserSession(CSRFMixin, BaseUser):
     id: int 
     img_url: str | None = None
 

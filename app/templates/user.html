@@ -24,6 +24,7 @@
     <input type="text" id="nickname" name="nickname" class="form-control" value="{{user.profile.nickname}}" required>
     <div class="invalid-feedback">Укажите никнейм.</div>
   </div>
+  <input  class="form-control" type="hidden" name="csrf_token" id="csrf_token" value="{{CSRF_TOKEN}}" readonly>
 
   <div class="col-12">
     <label class="form-label d-block">Upload avatar</label>
@@ -43,6 +44,8 @@
       </div>
     </div>
   </div>
+
+  
 
   <div class="col-12 mt-2">
     <button class="btn btn-primary" type="submit">Save</button>

@@ -5,7 +5,7 @@ from app.handlers.deps import QuestionViewDep, get_current_user
 from fastapi import Form
 
 from app.models.users import UserORM
-from app.schemas.user import User
+from app.schemas.user import UserSession
 
 router = APIRouter(prefix="")
 
@@ -46,7 +46,7 @@ async def questions_list_tags_view(
 
 
 @router.get(api_path.ask, response_class=HTMLResponse)
-async def get_ask_page(view: QuestionViewDep, user: User = Depends(get_current_user)):
+async def get_ask_page(view: QuestionViewDep, user: UserSession = Depends(get_current_user)):
     template = await view.get_ask_page()
     return template
 
@@ -57,7 +57,7 @@ async def post_ask_page(
     title: str = Form(...), 
     body: str = Form(...), 
     tags: str | None = Form(None), 
-    user: User = Depends(get_current_user)
+    user: UserSession = Depends(get_current_user)
 ):
     return await view.create_question(title, body, user.id, tags)
 
@@ -67,6 +67,6 @@ async def post_answer(
     view: QuestionViewDep, 
     id: int = Path(...), 
     answer: str = Form(...),
-    user: User = Depends(get_current_user)
+    user: UserSession = Depends(get_current_user)
 ):
     return await view.create_answer(id, answer, user.id)
