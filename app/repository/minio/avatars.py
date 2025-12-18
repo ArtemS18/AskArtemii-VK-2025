@@ -10,6 +10,8 @@ MAX_FILE_SIZE = 1024*1024*5
 class FileSizeError(Exception):
     ...
 
+
+
 class UserBucket(MinioClient):
     bucket_name = "user-avatars"
 
@@ -30,7 +32,7 @@ class UserBucket(MinioClient):
         if file_size > MAX_FILE_SIZE:
             raise FileSizeError
 
-    async def save_avatar(self, file: UploadFile, user_id: int):
+    async def save_avatar(self, file: UploadFile, user_id: int) -> str:
         self._validata_size(file)
 
         body = await file.read()

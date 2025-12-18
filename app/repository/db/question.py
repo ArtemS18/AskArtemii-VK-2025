@@ -2,8 +2,8 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy import delete, insert, select, update, and_, func
 from app.lib.log import log_call
 from app.models import QuestionTagsORM
-from sqlalchemy.orm import joinedload, selectinload
-from app.models import QuestionORM, QuestionLikeORM, TagORM
+from sqlalchemy.orm import joinedload, selectinload, with_loader_criteria
+from app.models import QuestionORM, QuestionGradeORM, TagORM
 from app.models.answers import AnswerORM
 from app.models.users import UserORM
 
@@ -14,17 +14,27 @@ class QuestionRepo:
     questions_options = (
                      joinedload(QuestionORM.author).joinedload(UserORM.profile), 
                      joinedload(QuestionORM.tags), 
-                     joinedload(QuestionORM.answers)
+                     joinedload(QuestionORM.answers),
+                     
                     )
     
     def __init__(self, pg: PostgresClient):
         self.pg = pg
 
     @log_call
-    async def get_questions_order_by_datetime(self, limit: int = 10, offset: int =0) -> list[QuestionORM]:
+    async def get_questions_order_by_datetime(self, limit: int = 10, offset: int =0, user_id: int | None = None) -> list[QuestionORM]:
         query = select(QuestionORM).order_by(QuestionORM.created_at.desc()).options(
-            *self.questions_options
+            *self.questions_options,
         )
+        if user_id is not None:
+            query = query.options(
+                selectinload(QuestionORM.grade),
+                with_loader_criteria(
+                    QuestionGradeORM,
+                    QuestionGradeORM.user_id == user_id,
+                    include_aliases=True,
+                )
+            )
         query = query.limit(limit).offset(offset)
 
         raw = await self.pg._execute(query)
@@ -33,62 +43,62 @@ class QuestionRepo:
         return list(questions)
 
     @log_call
-    async def get_questions_order_by_hots(self, limit: int = 10, offset: int =0) -> list[QuestionORM]:
-        query = select(QuestionORM).order_by(QuestionORM.likes_count.desc()).options(
-            *self.questions_options
+    async def get_questions_order_by_hots(self, limit: int = 10, offset: int =0, user_id: int | None = None) -> list[QuestionORM]:
+        query = select(QuestionORM).order_by(QuestionORM.grade_count.desc()).options(
+            *self.questions_options,
+            
         )
+        if user_id is not None:
+            query = query.options(
+                selectinload(QuestionORM.grade),
+                with_loader_criteria(
+                    QuestionGradeORM,
+                    QuestionGradeORM.user_id == user_id,
+                    include_aliases=True,
+                )
+            )
         query = query.limit(limit).offset(offset)
 
         raw = await self.pg._execute(query)
         questions = raw.scalars().unique().all()
         return list(questions)
-    
     @log_call
-    async def create_question_like(self, user_id: int, question_id: int):
-        query_insert = insert(QuestionLikeORM).values(user_id=user_id, question_id=question_id)
-        query_update = update(QuestionORM).where(QuestionORM.id==question_id).values(likes_count=QuestionORM.likes_count+1)
-
-        async with self.pg.session.begin() as tr:
-            await tr.session.execute(query_insert)
-            await tr.session.execute(query_update)
-
-    @log_call
-    async def delete_question_like(self, user_id: int, question_id: int):
-        query_delete = delete(QuestionLikeORM).where(
-            and_(QuestionLikeORM.user_id==user_id, QuestionLikeORM.question_id==question_id) 
-        ).returning(QuestionLikeORM.question_id)
-        query_update = update(QuestionORM).where(
-            QuestionORM.id==question_id
-        ).values(likes_count=QuestionORM.likes_count-1).returning(QuestionORM.id)
-
-        async with self.pg.session.begin() as tr:
-            res = await tr.session.execute(query_delete)
-            if res.scalar_one_or_none():
-                res = await tr.session.execute(query_update)
-                if not res.scalar_one_or_none():
-                    await tr.rollback()
-                return 
-            else:
-                raise NoResultFound()
-    @log_call
-    async def get_question_by_id(self, question_id: int) -> QuestionORM | None:
+    async def get_question_by_id(self, question_id: int, user_id: int | None = None) -> QuestionORM | None:
         query = select(QuestionORM).where(QuestionORM.id == question_id).options(
                 joinedload(QuestionORM.author).joinedload( UserORM.profile), 
                 joinedload(QuestionORM.tags), 
                 joinedload(QuestionORM.answers).joinedload(AnswerORM.author).joinedload( UserORM.profile)
         )
+        if user_id is not None:
+            query = query.options(
+                selectinload(QuestionORM.grade),
+                with_loader_criteria(
+                    QuestionGradeORM,
+                    QuestionGradeORM.user_id == user_id,
+                    include_aliases=True,
+                )
+            )
         raw = await self.pg._execute(query)
         question = raw.scalars().unique().one_or_none()
         return question
 
     @log_call
-    async def get_questions_by_tag(self, tag_id: int, limit: int = 10, offset: int =0) -> list[QuestionORM]:
+    async def get_questions_by_tag(self, tag_id: int, limit: int = 10, offset: int =0, user_id: int | None = None) -> list[QuestionORM]:
         query = (
             select(QuestionORM)
             .join(QuestionTagsORM, QuestionORM.id == QuestionTagsORM.question_id)
             .join(TagORM, QuestionTagsORM.tag_id == TagORM.id)
             .where(TagORM.id == tag_id)
             .options(*self.questions_options)
+            )
+        if user_id is not None:
+            query = query.options(
+                selectinload(QuestionORM.grade),
+                with_loader_criteria(
+                    QuestionGradeORM,
+                    QuestionGradeORM.user_id == user_id,
+                    include_aliases=True,
+                )
             )
         raw = await self.pg._execute(query)
         questions = raw.scalars().unique().all()

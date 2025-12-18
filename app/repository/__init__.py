@@ -1,21 +1,33 @@
 from dataclasses import dataclass
+from typing import Protocol
+
+from fastapi import UploadFile
 
 from app.core.config import config
 from app.repository.db.client import PostgresClient
+from app.repository.db.grade import GradesRepo
+from app.repository.local_storage.local_storage import LocalFileStorage
 from app.repository.redis.sessions import UserSessions
 from app.repository.db.question import QuestionRepo
 from app.repository.db.user import UserRepo
 from app.repository.db.tags import TagRepo
 from .minio.avatars import UserBucket
 
+class FileRepo(Protocol):
+    async def connect(self) -> None:
+        ...
+    async def save_avatar(self, file: UploadFile, user_id: int) -> str:
+        ...
+
 @dataclass
 class Store:
-    minio: UserBucket
+    fiels: FileRepo
     redis: UserSessions
 
     quesion: QuestionRepo
     user: UserRepo
     tag: TagRepo
+    grade: GradesRepo
 
 _store: Store | None = None
 
@@ -25,18 +37,21 @@ async def init_store() -> Store:
         pg = PostgresClient(config.db.url)
 
         await pg.connect()
+        file_repo = UserBucket(
+            config.minio.url, 
+            config.minio.access_key, 
+            config.minio.secret_key
+        ) if not config.local_storage else LocalFileStorage() # TODO: add config for localfile storage
+
         
         _store = Store(
-            minio=UserBucket(
-                config.minio.url, 
-                config.minio.access_key, 
-                config.minio.secret_key
-            ),
+            fiels=file_repo,
             redis=UserSessions(), # TODO: add config for redis
 
             quesion=QuestionRepo(pg),
             user=UserRepo(pg),
-            tag=TagRepo(pg)
+            tag=TagRepo(pg),
+            grade=GradesRepo(pg)
         )
     return _store
 
