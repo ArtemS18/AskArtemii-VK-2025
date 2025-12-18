@@ -1,6 +1,6 @@
 from .answers import AnswerORM
 from .questions import QuestionORM, QuestionTagsORM
-from .likes import AnswerLikeORM, QuestionLikeORM
+from .grade import AnswerGradeORM, QuestionGradeORM
 from .users import UserORM, UserProfileORM
 from .tags import TagORM
 from .base import BaseORM
@@ -10,8 +10,9 @@ __all__ = (
     "AnswerORM", 
     "QuestionORM", 
     "QuestionTagsORM", 
-    "AnswerLikeORM", 
-    "QuestionLikeORM", 
+    "AnswerGradeORM", 
+    "QuestionGradeORM", 
     "UserORM",
     "UserProfileORM",
-    "TagORM")
+    "TagORM",
+)

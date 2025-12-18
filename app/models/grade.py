@@ -11,29 +11,30 @@ if typing.TYPE_CHECKING:
     from app.models.users import UserORM
 
 
-class QuestionLikeORM(CreatedMixin, BaseORM):
-    __tablename__ = "question_likes"
+class QuestionGradeORM(CreatedMixin, BaseORM):
+    __tablename__ = "question_grade"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, primary_key=True)
     question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), nullable=False, primary_key=True)
+    is_like: Mapped[bool]
 
     question: Mapped["QuestionORM"] = relationship(
-        back_populates="likes"
+        back_populates="grade"
     )
     user: Mapped["UserORM"] = relationship(
-        back_populates="question_likes"
+        back_populates="question_grade"
     )
 
-class AnswerLikeORM(CreatedMixin, BaseORM):
-    __tablename__ = "answer_likes"
+class AnswerGradeORM(CreatedMixin, BaseORM):
+    __tablename__ = "answer_grade"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, primary_key=True)
     answer_id: Mapped[int] = mapped_column(ForeignKey("answers.id"), nullable=False, primary_key=True)
 
     answer: Mapped["AnswerORM"] = relationship(
-        back_populates="likes"
+        back_populates="grade"
     )
     user: Mapped["UserORM"] = relationship(
-        back_populates="answer_likes"
+        back_populates="answer_grade"
     )
 
