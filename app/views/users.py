@@ -21,7 +21,7 @@ class UserView(BaseView):
         img_url = None
         try:
             if avatar and avatar.file:
-                img_url = await self.store.fiels.save_avatar(avatar, user_id)
+                img_url = await self.store.minio.save_avatar(avatar, user_id)
         except FileSizeError:
             return await self.profile_edit_get(user_id, ErrorTemplate("Слишком большой файл!"))
         

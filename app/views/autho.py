@@ -26,12 +26,14 @@ class AuthoView(BaseView):
         user = await self.store.user.get_user_by_email(email)
         if not user:
             return await self.login_page(
+                "login.html", 
                 error=ErrorTemplate(text="Invalid email or password."),
                 email=email
             )
 
         if not pwd.verify_password(password, user.hashed_password):
            return await self.login_page(
+                "login.html", 
                 error=ErrorTemplate(text="Invalid email or password."),
                 email=email
             )

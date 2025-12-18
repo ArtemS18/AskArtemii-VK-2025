@@ -53,25 +53,14 @@ AuthoViewDep = Annotated[AuthoView, Depends(get_autho_view)]
 QuestionViewDep = Annotated[QuestionView, Depends(get_question_view)]
 UserViewDep = Annotated[UserView, Depends(get_users_view)]
 
-async def get_csrf_token(req: Request):
-    csrf_token = req.headers.get('X-CSRFToken')
-    if not csrf_token:
-        form = await req.form()
-        csrf_token = form.get("csrf_token")
-        if not csrf_token:
-            HTTPException(status_code=401, detail="CSRF not found")
-    return csrf_token
-
-
-
-async def csrf_validate(request: Request, store: StoreDep, csrf_token = Depends(get_csrf_token)) -> bool:
+async def csrf_validate(request: Request, store: StoreDep, csrf_token: UUID = Form(...)) -> bool:
     exp = HTTPException(status_code=401, detail="CSRF validation error")
     if csrf_token:
         if key := request.cookies.get("session"):
             user_session: UserSession = await store.redis.get_session(key)
+            log.info(user_session.csrf_token)
             if user_session:
-                log.info(user_session.csrf_token)
-                if csrf_token == str(user_session.csrf_token):
+                if csrf_token == user_session.csrf_token:
                     return True
     raise exp
 

@@ -41,7 +41,7 @@ def generate_questions(ratio: int, user_ids: list[int]) -> list[tuple]:
         questions.append({
             "title": f"Question Title {i}",
             "text": f"Question Text {i}. This is a sample question generated for testing purposes.",
-            "grade_count": random.randint(1, 50),
+            "likes_count": random.randint(1, 50),
             "author_id": author_id
         })
     return questions
@@ -53,7 +53,7 @@ def generate_answers(ratio: int, user_ids: list[int], question_ids: list[int]) -
         question_id = random.choice(question_ids)
         answers.append({
             "text": f"Answer Text {i}. This is a sample answer to question {question_id}.",
-            "grade_count": random.randint(0, 20),
+            "likes_count": random.randint(0, 20),
             "is_correct": random.choice([True, False]),
             "author_id": author_id,
             "question_id": question_id
@@ -67,35 +67,35 @@ def generate_tags(ratio: int) -> list[tuple]:
         tags.append({"name": f"Tag_{i}"})
     return tags
 
-def generate_question_grade(ratio: int, user_ids: list[int], question_ids: list[int]) -> list[tuple]:
-    grade = []
+def generate_question_likes(ratio: int, user_ids: list[int], question_ids: list[int]) -> list[tuple]:
+    likes = []
     generated_pairs = set()
     for _ in range(ratio * 200):
         user_id = random.choice(user_ids)
         question_id = random.choice(question_ids)
         
         if (user_id, question_id) not in generated_pairs:
-            grade.append({
+            likes.append({
                 "user_id": user_id,
                 "question_id": question_id
             })
             generated_pairs.add((user_id, question_id))
-    return grade
+    return likes
 
-def generate_answer_grade(ratio: int, user_ids: list[int], answer_ids: list[int]) -> list[tuple]:
-    grade = []
+def generate_answer_likes(ratio: int, user_ids: list[int], answer_ids: list[int]) -> list[tuple]:
+    likes = []
     generated_pairs = set()
     for _ in range(ratio * 200):
         user_id = random.choice(user_ids)
         answer_id = random.choice(answer_ids)
         
         if (user_id, answer_id) not in generated_pairs:
-            grade.append({
+            likes.append({
                 "user_id": user_id,
                 "answer_id": answer_id
             })
             generated_pairs.add((user_id, answer_id))
-    return grade
+    return likes
 
 def generate_question_tags(ratio: int, question_ids: list[int], tag_ids: list[int]) -> list[tuple]:
     question_tags = []
@@ -160,21 +160,21 @@ async def fill_db(ratio = 100):
         await session.flush()
         log.info(f"Created {len(question_tags_data_tuples)} question-tag associations.")
 
-        question_grade_data_tuples = generate_question_grade(ratio, created_user_ids, created_question_ids)
-        for k in range(0, len(question_grade_data_tuples), 1000):
-            len_ = min(len(question_grade_data_tuples)-1, k+1000)
-            stmt_question_grade = insert(QuestionLikeORM).values(question_grade_data_tuples[k:len_])
-            await session.execute(stmt_question_grade)
+        question_likes_data_tuples = generate_question_likes(ratio, created_user_ids, created_question_ids)
+        for k in range(0, len(question_likes_data_tuples), 1000):
+            len_ = min(len(question_likes_data_tuples)-1, k+1000)
+            stmt_question_likes = insert(QuestionLikeORM).values(question_likes_data_tuples[k:len_])
+            await session.execute(stmt_question_likes)
             await session.flush()
-        log.info(f"Created {len(question_grade_data_tuples)} question grade.")
+        log.info(f"Created {len(question_likes_data_tuples)} question likes.")
 
-        answer_grade_data_tuples = generate_answer_grade(ratio, created_user_ids, created_answer_ids)
-        for k in range(0, len(answer_grade_data_tuples), 1000):
-            len_ = min(len(answer_grade_data_tuples)-1, k+1000)
-            stmt_answer_grade = insert(AnswerLikeORM).values(answer_grade_data_tuples[k:len_])
-            await session.execute(stmt_answer_grade)
+        answer_likes_data_tuples = generate_answer_likes(ratio, created_user_ids, created_answer_ids)
+        for k in range(0, len(answer_likes_data_tuples), 1000):
+            len_ = min(len(answer_likes_data_tuples)-1, k+1000)
+            stmt_answer_likes = insert(AnswerLikeORM).values(answer_likes_data_tuples[k:len_])
+            await session.execute(stmt_answer_likes)
             await session.flush()
-        log.info(f"Created {len(answer_grade_data_tuples)} answer grade.")
+        log.info(f"Created {len(answer_likes_data_tuples)} answer likes.")
 
         await session.commit()
         log.info("Database filled successfully!")

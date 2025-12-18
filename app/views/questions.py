@@ -1,4 +1,3 @@
-from logging import getLogger
 from fastapi import Request
 from app.lib import pagination as pgn
 from app.models.questions import QuestionORM
@@ -6,9 +5,7 @@ from app.repository import Store
 from app.views.base import BaseView
 from app.core.config import api_path
 from fastapi.responses import RedirectResponse
-from types import SimpleNamespace
 
-log = getLogger(__name__)
 class QuestionView(BaseView):
     def __init__(self, request: Request, store: Store):
         super().__init__(request, store)
@@ -21,21 +18,18 @@ class QuestionView(BaseView):
     
     async def questions_list_view(
         self,
-        page: int,
+        page: int
     ):
         paginate = await self._get_question_paginate(page)
-        _user_id = await self._get_user_id() 
-        
         questions = await self.store.quesion.get_questions_order_by_datetime(
             limit=self.PER_PAGE, 
-            offset=paginate.offset,
-            user_id= _user_id
+            offset=paginate.offset
         )
         return await self.template_paginate(
             "index.html", {
                 "pagination": paginate,
                 "questions":questions
-            }
+                }
         )
 
     async def question_view(
@@ -43,9 +37,7 @@ class QuestionView(BaseView):
         id: int, 
         page: int
     ):
-        _user_id = await self._get_user_id() 
-        question_orm: QuestionORM = await self.store.quesion.get_question_by_id(id, user_id= _user_id)
-       
+        question_orm: QuestionORM = await self.store.quesion.get_question_by_id(id)
         pagination_data = pgn.paginate(question_orm.answers_count, page, self.PER_PAGE)
         return await self.template_paginate(
              "question.html", {
@@ -60,11 +52,9 @@ class QuestionView(BaseView):
         page: int
     ):
         paginate = await self._get_question_paginate(page)
-        _user_id = await self._get_user_id() 
         questions = await self.store.quesion.get_questions_order_by_hots(
             limit=self.PER_PAGE, 
-            offset=paginate.offset,
-            user_id= _user_id
+            offset=paginate.offset
         )
 
         return await self.template_paginate(
@@ -80,13 +70,11 @@ class QuestionView(BaseView):
         page: int
     ):
         tag = await self.store.tag.get_tag_by_id(tag_id)
-        _user_id = await self._get_user_id() 
         paginate = await self._get_question_paginate(page, tag_id=tag_id)
         questions = await self.store.quesion.get_questions_by_tag(
             tag_id=tag_id, 
             limit=self.PER_PAGE, 
-            offset=paginate.offset,
-            user_id= _user_id
+            offset=paginate.offset
         )
         return await self.template_paginate(
              "tags_questions.html", {

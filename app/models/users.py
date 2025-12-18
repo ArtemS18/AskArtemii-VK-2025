@@ -9,7 +9,7 @@ from .base import BaseORM, CreatedMixin, IDMixin
 if typing.TYPE_CHECKING:
     from .questions import QuestionORM
     from .answers import AnswerORM
-    from .grade import AnswerGradeORM, QuestionGradeORM
+    from .likes import AnswerLikeORM, QuestionLikeORM
 
 
 class UserORM(IDMixin,CreatedMixin, BaseORM):
@@ -26,8 +26,8 @@ class UserORM(IDMixin,CreatedMixin, BaseORM):
     )
     questions: Mapped[List["QuestionORM"]] = relationship(back_populates="author")
     answers: Mapped[List["AnswerORM"]] = relationship(back_populates="author")
-    answer_grade: Mapped[List["AnswerGradeORM"]] = relationship(back_populates="user")
-    question_grade: Mapped[List["QuestionGradeORM"]] = relationship(back_populates="user")
+    answer_likes: Mapped[List["AnswerLikeORM"]] = relationship(back_populates="user")
+    question_likes: Mapped[List["QuestionLikeORM"]] = relationship(back_populates="user")
     __table_args__ = (
         Index("indx_popular_count_desc", popular_count.desc()),
     )

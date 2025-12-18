@@ -57,8 +57,6 @@ class Config(BaseSettings):
     endpoint: EndpointConfig
     db: DBConfig
     minio: MinioConfig
-    local_storage: bool = True
-    local_storage_dir: str = "static/avatars"
 
     @property
     def template_path(self):

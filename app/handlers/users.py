@@ -30,4 +30,3 @@ async def user_settings_post(
     user: UserSession = Depends(get_current_user),
 ):
     return await view.profile_edit_post(email, nickname, avatar,  user.id)
-

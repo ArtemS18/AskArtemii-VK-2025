@@ -4,11 +4,14 @@ from uuid import UUID
 import uuid
 from fastapi import Request, Response
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import config, api_path
 from app.lib.log import log_call
 from app.lib.random_ import get_random_seq
 from app.repository import Store
+from app.schemas.mixin import CSRFMixin
 from app.schemas.user import UserSession
 log = getLogger(__name__)
 
@@ -41,16 +44,15 @@ class BaseView():
         )
         return await self.template_response(template_name, context)
     
-    async def _get_session(self) -> UserSession:
-        key = self.request.cookies.get("session")
-        if key is not None:
-            user_session = await self.store.redis.get_session(key)
-            return user_session
-        
-    async def _get_user_id(self) -> int | None:
-        session = await self._get_session()
-        if session is not None:
-            return session.id
+    async def get_user_id_from_cookie(self) -> int | None:
+        uid = self.request.cookies.get("user_id")
+        if not uid:
+            return None
+        try:
+            uid_i = int(uid)
+        except Exception:
+            return None
+        return uid_i
     
     async def _set_session(self, resp: Response, id_: int, nickname: str, img_url: str):
         session_key = get_random_seq()

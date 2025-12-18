@@ -3,9 +3,9 @@ from logging import getLogger
 import time
 from typing import Any, Callable, Coroutine, TypeVar
 
-T = TypeVar("Function", bound= Callable[..., Coroutine[Any, Any, Any]])
 
-def log_call( func: T) -> T:
+
+def log_call[T](func: Callable[..., Coroutine[Any, Any, T]]) -> Callable[..., Coroutine[Any, Any, T]]:
 
     @wraps(func)
     async def wrapper(*args, **kwargs):

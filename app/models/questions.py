@@ -1,6 +1,6 @@
 import typing
 
-from sqlalchemy import CheckConstraint, ForeignKey, Index, Table, Column
+from sqlalchemy import ForeignKey, Index, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Integer, String, Text
 
@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
     from .users import UserORM
     from .tags import TagORM
     from .answers import AnswerORM
-    from .grade import QuestionGradeORM
+    from .likes import QuestionLikeORM
 
 
 class QuestionORM(IDMixin,CreatedMixin, BaseORM):
@@ -17,8 +17,7 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    like_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    dislike_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    likes_count: Mapped[int] = mapped_column(Integer, default=0)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
 
     author: Mapped["UserORM"] = relationship(back_populates="questions")
@@ -28,9 +27,8 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
     answers: Mapped[list["AnswerORM"]] = relationship(
         back_populates="question"
     )
-    grade: Mapped[list["QuestionGradeORM"]] = relationship(
-        back_populates="question",
-        lazy="noload"
+    likes: Mapped[list["QuestionLikeORM"]] = relationship(
+        back_populates="question"
     )
 
     @property
@@ -38,13 +36,11 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
         return len(self.answers) if self.answers is not None else 0
     
     @property
-    def grade_orm_count(self) -> int:
-        return len(self.grade) if self.grade is not None else 0
+    def likes_orm_count(self) -> int:
+        return len(self.likes) if self.likes is not None else 0
     
     __table_args__ = (
-        Index("indx_grade_count_desc", like_count.desc()),
-        CheckConstraint("like_count >= 0", name="check_like_count"),
-        CheckConstraint("dislike_count >= 0", name="check_dislike_count")
+        Index("indx_likes_count_desc", likes_count.desc()),
     )
 
 
