@@ -1,9 +1,12 @@
+from logging import getLogger
 from fastapi import UploadFile
 from app.repository.minio.avatars import FileSizeError
 from app.schemas.error import ErrorTemplate
 from app.schemas.user import UserSession, UserUpdate
 from app.views.base import BaseView
 import uuid
+
+log = getLogger(__name__)
 
 class UserView(BaseView):
 
@@ -22,6 +25,7 @@ class UserView(BaseView):
         try:
             if avatar and avatar.file:
                 img_url = await self.store.fiels.save_avatar(avatar, user_id)
+                log.info(img_url)
         except FileSizeError:
             return await self.profile_edit_get(user_id, ErrorTemplate("Слишком большой файл!"))
         

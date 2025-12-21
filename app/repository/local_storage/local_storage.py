@@ -18,4 +18,4 @@ class LocalFileStorage:
         filename = f"{user_id}{ext}"
         async with open(upload_dir.joinpath(filename), "bw") as f:
             await f.write(content)
-        return f"http://{config.server.host}:{config.server.port}/static/avatars/{filename}"
+        return f"{config.local_storage_url}/{config.local_storage_dir}/{filename}"

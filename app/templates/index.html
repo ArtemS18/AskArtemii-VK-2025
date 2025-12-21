@@ -10,7 +10,7 @@
         {%endblock%}
     </h4>
     {%for question in questions%}
-      <article class="card mb-3 shadow-sm" data-question-id="{{ question.id }}">
+      <article class="card mb-3 shadow-sm" data-card-question-id="{{ question.id }}">
         <div class="card-body p-3">
          <div class="d-flex gap-3 flex-column">
            <div class="d-flex">
@@ -91,105 +91,6 @@
 {%endblock%}
 
 {%block scripts%}
-<script>
-$(document).ready(function() {
-  var csrfToken = $('meta[name="csrf-token"]').attr('content') || '';
-
-  function applyButtonState($btn, active) {
-    var isLike = String($btn.data('is-like')) === "true";
-
-    $btn.toggleClass('liked-like', active && isLike);
-    $btn.toggleClass('liked-dislike', active && !isLike);
-
-    if (active) {
-      $btn.removeClass('btn-outline-secondary')
-          .addClass(isLike ? 'btn-primary text-white' : 'btn-danger text-white');
-    } else {
-      $btn.removeClass('btn-primary btn-danger text-white')
-          .addClass('btn-outline-secondary');
-    }
-  }
-
-  $('.grade-btn').on('click', function(e) {
-    e.preventDefault();
-
-    var $btn = $(this);
-    var questionId = $btn.data('question-id');
-    var isLike = String($btn.data('is-like')) === "true";
-
-    // Кнопки в рамках одного question
-    var $card = $btn.closest('article[data-question-id]');
-    var $likeBtn = $card.find('.grade-btn[data-is-like="true"]');
-    var $dislikeBtn = $card.find('.grade-btn[data-is-like="false"]');
-    var $isActive = $likeBtn.hasClass('liked-like') || $dislikeBtn.hasClass('liked-dislike');
-
-    var wasActive = $btn.hasClass(isLike ? 'liked-like' : 'liked-dislike');
-    var method;
-    if ($isActive) {
-      if (wasActive) {
-        method = "DELETE";
-      } else {
-        method = "PUT";
-      }
-    } else {
-      method = "POST";
-    }
-
-    if (method === "POST") {
-      applyButtonState($likeBtn, isLike);
-      applyButtonState($dislikeBtn, !isLike);
-    }
-    else if (method === "PUT") {
-        applyButtonState($likeBtn, isLike);
-        applyButtonState($dislikeBtn, !isLike);
-    } else {
-      applyButtonState($btn, false);
-    }
-
-    $.ajax({
-      url: '/grade/like/',   
-      method: method,
-      contentType: 'application/json',
-      dataType: 'json',
-      data: JSON.stringify({ is_like: isLike, question_id: questionId }),
-      headers: {
-        'X-CSRFToken': csrfToken,
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      success: function(data) {
-        $card.find('.like-count').text(data.like_count);
-        $card.find('.dislike-count').text(data.dislike_count);
-      },
-      error: function(xhr) {
-        if (method === "POST") {
-          applyButtonState($likeBtn, $likeBtn.hasClass('liked-like'));
-          applyButtonState($dislikeBtn, $dislikeBtn.hasClass('liked-dislike'));
-        } else {
-          applyButtonState($btn, true);
-        }
-      }
-    });
-  });
-});
-</script>
-
-<style>
-/* LIKE active */
-.grade-btn.liked-like {
-  background-color: var(--bs-primary) !important;
-  border-color: var(--bs-primary) !important;
-}
-.grade-btn.liked-like .text-muted {
-  color: white !important;
-}
-
-/* DISLIKE active */
-.grade-btn.liked-dislike {
-  background-color: var(--bs-danger) !important;
-  border-color: var(--bs-danger) !important;
-}
-.grade-btn.liked-dislike .text-muted {
-  color: white !important;
-}
-</style>
+  <script src="{{STATIC_URL}}/grade.js"></script>
 {%endblock%}
+

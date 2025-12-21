@@ -5,6 +5,7 @@ from app.models import QuestionTagsORM
 from sqlalchemy.orm import joinedload, selectinload, with_loader_criteria
 from app.models import QuestionORM, QuestionGradeORM, TagORM
 from app.models.answers import AnswerORM
+from app.models.grade import AnswerGradeORM
 from app.models.users import UserORM
 
 from app.repository.db.client import PostgresClient
@@ -44,7 +45,7 @@ class QuestionRepo:
 
     @log_call
     async def get_questions_order_by_hots(self, limit: int = 10, offset: int =0, user_id: int | None = None) -> list[QuestionORM]:
-        query = select(QuestionORM).order_by(QuestionORM.grade_count.desc()).options(
+        query = select(QuestionORM).order_by(QuestionORM.like_count.desc()).options(
             *self.questions_options,
             
         )
@@ -75,6 +76,14 @@ class QuestionRepo:
                 with_loader_criteria(
                     QuestionGradeORM,
                     QuestionGradeORM.user_id == user_id,
+                    include_aliases=True,
+                )
+            )
+            query = query.options(
+                joinedload(QuestionORM.answers).selectinload(AnswerORM.grade),
+                with_loader_criteria(
+                    AnswerGradeORM,
+                    AnswerGradeORM.user_id == user_id,
                     include_aliases=True,
                 )
             )

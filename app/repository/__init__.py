@@ -4,6 +4,7 @@ from typing import Protocol
 from fastapi import UploadFile
 
 from app.core.config import config
+from app.repository.db.answer import AnswerRepo
 from app.repository.db.client import PostgresClient
 from app.repository.db.grade import GradesRepo
 from app.repository.local_storage.local_storage import LocalFileStorage
@@ -28,6 +29,7 @@ class Store:
     user: UserRepo
     tag: TagRepo
     grade: GradesRepo
+    answer: AnswerRepo
 
 _store: Store | None = None
 
@@ -47,11 +49,11 @@ async def init_store() -> Store:
         _store = Store(
             fiels=file_repo,
             redis=UserSessions(), # TODO: add config for redis
-
             quesion=QuestionRepo(pg),
             user=UserRepo(pg),
             tag=TagRepo(pg),
-            grade=GradesRepo(pg)
+            grade=GradesRepo(pg),
+            answer=AnswerRepo(pg)
         )
     return _store
 

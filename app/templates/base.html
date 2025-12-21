@@ -6,28 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AskArtemii — Вопросы</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{STATIC_URL}}/index.css" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   </head>
   <body>
-    <style>
-        .vote-vertical {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: .25rem;
-        align-items: center;
-        justify-items: center;
-        }
-        .vote-vertical .count {
-        min-width: 2.25rem;
-        text-align: center;
-        font-weight: 600;
-        }
-        .answer-correct {
-        border: 2px solid rgba(var(--bs-primary-rgb), .6);
-        }
-
-    </style>
     <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom">
       <div class="container">
         <a class="navbar-brand fw-bold" href="{{URL_HOME}}">Ask<span class="text-primary">Artemii</span></a>

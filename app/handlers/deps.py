@@ -1,7 +1,9 @@
+import json
 from logging import getLogger
 from typing import Annotated
 from uuid import UUID
-from fastapi import Depends, Form, HTTPException, Request, status
+from fastapi import Body, Depends, Form, HTTPException, Request, status
+from fastapi.exceptions import RequestValidationError
 from app.core.config import config
 from app.repository import Store, get_store
 from app.schemas.user import UserSession
@@ -75,4 +77,35 @@ async def csrf_validate(request: Request, store: StoreDep, csrf_token = Depends(
                     return True
     raise exp
 
+
+
+
+async def validate_author_answer(request: Request, store: StoreDep, user_session: UserSession = Depends(get_current_user)) :
+    user_id = user_session.id
+    try:
+        body: dict = await request.json()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="Invalid JSON body",
+        )
+
+    answer_id = body.get("answer_id")
+    if answer_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="answer_id is required",
+        )
+
+    try:
+        answer_id = int(answer_id)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="answer_id must be an integer",
+        )
+    
+    answer = await store.answer.get_answer_by_id(answer_id)
+    if not(answer and answer.author_id == user_id):
+         raise HTTPException(status_code=403, detail="You are not author")
 

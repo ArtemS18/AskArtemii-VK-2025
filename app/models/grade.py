@@ -30,6 +30,7 @@ class AnswerGradeORM(CreatedMixin, BaseORM):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, primary_key=True)
     answer_id: Mapped[int] = mapped_column(ForeignKey("answers.id"), nullable=False, primary_key=True)
+    is_like: Mapped[bool]
 
     answer: Mapped["AnswerORM"] = relationship(
         back_populates="grade"

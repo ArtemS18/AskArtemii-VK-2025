@@ -1,6 +1,10 @@
+from sqlalchemy import Executable, Result, ScalarResult, Select, Sequence
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator, Optional, TypeVar
+from sqlalchemy.engine.row import RowMapping
+
+T = TypeVar("T")
 
 class PostgresClient:
     def __init__(self, url: str):
@@ -14,12 +18,28 @@ class PostgresClient:
         if self.engine:
             await self.engine.dispose()
 
-    async def _execute(self, query):
-        if self.session:
-            async with self.session() as session:
-                return await session.execute(query)
-        else:
+    async def _execute(self, stmt: Executable) -> Result[Any]:
+        if not self.session:
             raise ValueError("session is None")
+        async with self.session() as session:  # type: AsyncSession
+            return await session.execute(stmt)
+
+    async def scalar_one_or_none(self, stmt: Select[tuple[T]]) -> Optional[T]:
+        res = await self._execute(stmt)
+        return res.scalars().one_or_none()
+
+    async def mapping(self, stmt: Select[Any]) -> RowMapping:
+        res = await self._execute(stmt)
+        return res.mappings().one()
+
+    async def scalars_all(self, stmt: Select[tuple[T]]) -> Sequence[T]:
+        res = await self._execute(stmt)
+        return res.scalars().all()
+
+    async def scalars(self, stmt: Select[tuple[T]]) -> ScalarResult[T]:
+        res = await self._execute(stmt)
+        return res.scalars()
+        
         
     @asynccontextmanager
     async def get_session(self, with_tr: bool = False) ->AsyncGenerator[AsyncSession, None]:

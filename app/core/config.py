@@ -48,7 +48,6 @@ class EndpointConfig(BaseModel):
 class Config(BaseSettings):
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
-        str_to_upper=True,
         env_file=os.getenv("ENV_PATH", ".env")
     )
     base_dir: str = "app/"
@@ -58,7 +57,8 @@ class Config(BaseSettings):
     db: DBConfig
     minio: MinioConfig
     local_storage: bool = True
-    local_storage_dir: str = "static/avatars"
+    local_storage_dir: str = "media/avatars"
+    local_storage_url: str = "http://localhost:8080"
 
     @property
     def template_path(self):

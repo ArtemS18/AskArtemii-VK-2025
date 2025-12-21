@@ -24,7 +24,8 @@ dependencies = [
     "cachetools (>=6.2.2,<7.0.0)",
     "redis (>=7.1.0,<8.0.0)",
     "aiobotocore (>=2.26.0,<3.0.0)",
-    "minio (>=7.2.20,<8.0.0)"
+    "minio (>=7.2.20,<8.0.0)",
+    "waitress (>=3.0.2,<4.0.0)",
 ]
 
 [tool.poetry]

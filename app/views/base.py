@@ -82,6 +82,7 @@ class BaseView():
             "URL_USER": api_path.user,
             "URL_HOT_QUESTION": api_path.hot,
             "URL_HOT_TAGS": api_path.tags,
-            "CSRF_TOKEN": csrf_token
+            "CSRF_TOKEN": csrf_token,
+            "STATIC_URL": f"{config.local_storage_url}/static"
         }
 
