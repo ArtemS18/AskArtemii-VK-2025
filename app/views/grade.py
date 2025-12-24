@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Any, Callable, Coroutine, TypeVar
 import fastapi
 from sqlalchemy import exc as sqlalchemy_exc
+from app.lib.log import log_call
 from app.schemas.grade import AnswerCorrect, AnswerGradeIn, AnswerOut, GradeIn, GradeOut
 from app.repository import Store
 
@@ -104,7 +105,7 @@ class GredeView:
         )
         return new_grade
         
-
+    @log_call
     @_exeptions
     async def delete_answer_grede(self, grade: AnswerGradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.delete_answer_grade(user_id, grade.answer_id)
@@ -124,7 +125,7 @@ class GredeView:
         )
         return new_grade
         
-
+    @log_call
     @_exeptions
     async def update_answer_grade(self, grade: AnswerGradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.update_answer_grade(user_id, grade.answer_id, grade.is_like)

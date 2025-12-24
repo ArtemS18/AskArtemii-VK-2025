@@ -1,4 +1,6 @@
+import pickle
 from sqlalchemy import select
+from app.lib.cache import cache_query, invalidate_query
 from app.lib.log import log_call
 from app.models.users import UserORM, UserProfileORM
 from sqlalchemy.orm import joinedload
@@ -11,6 +13,7 @@ class UserRepo():
         self.pg = pg
 
     @log_call
+    @cache_query("users", ttl=700)
     async def get_users_order_by_popular(self, limit=10) -> list[UserORM]:
         query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit).options(joinedload(UserORM.profile))
         raw = await self.pg._execute(query)
@@ -34,6 +37,7 @@ class UserRepo():
 
 
     @log_call
+    @invalidate_query("users")
     async def create_user(self, data: UserWrite) -> UserORM:
         user = UserORM(
                 email=data.email,

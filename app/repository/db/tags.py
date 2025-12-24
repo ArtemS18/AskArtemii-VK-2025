@@ -1,6 +1,8 @@
+from functools import lru_cache
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 
+from app.lib.cache import cache_query, invalidate_query
 from app.lib.log import log_call
 from app.models.tags import TagORM
 from app.repository.db.client import PostgresClient
@@ -22,6 +24,7 @@ class TagRepo():
 
 
     @log_call
+    @cache_query("tags", ttl=600)
     async def get_tags_order_by_popular(self, limit=10) -> list[TagORM]:
         query = select(TagORM).order_by(TagORM.popular_count.desc()).limit(limit)
         raw = await self.pg._execute(query)
@@ -66,6 +69,7 @@ class TagRepo():
 
         return result
     
+    @invalidate_query("tags")
     async def bump_popularity(self, tag_ids: list[int]) -> None:
         if not tag_ids:
             return
