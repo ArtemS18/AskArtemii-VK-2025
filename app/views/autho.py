@@ -1,15 +1,13 @@
 from typing import Optional
-
-from fastapi import Request, Response, status
+from fastapi import Request, status
 from fastapi.responses import RedirectResponse
+
 from app.repository import Store
 from app.schemas.error import ErrorTemplate
-from app.schemas.user import UserSession, UserForm, UserWrite
+from app.schemas.user import UserForm, UserWrite
 from app.views.base import BaseView
-from app.lib.random_ import get_random_seq
 from app.core.config import api_path, BASE_IMG
 from app.lib import password as pwd
-import uuid
 
 
 class AuthoView(BaseView):

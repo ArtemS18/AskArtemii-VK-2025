@@ -1,15 +1,17 @@
 from logging import getLogger
 from fastapi import Request
+from fastapi.responses import RedirectResponse
+
 from app.lib import pagination as pgn, parser
 from app.models.questions import QuestionORM
 from app.repository import Store
 from app.schemas.error import ErrorTemplate
 from app.views.base import BaseView
 from app.core.config import api_path
-from fastapi.responses import RedirectResponse
-from types import SimpleNamespace
+
 
 log = getLogger(__name__)
+
 class QuestionView(BaseView):
     def __init__(self, request: Request, store: Store):
         super().__init__(request, store)

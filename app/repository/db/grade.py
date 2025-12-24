@@ -10,9 +10,6 @@ from app.repository.db.client import PostgresClient
 from app.schemas.grade import AnswerOut, GradeOut
 
 class GradesRepo:
-    mm_model: BaseORM
-    
-
     def __init__(self, pg: PostgresClient):
         self.pg = pg
 

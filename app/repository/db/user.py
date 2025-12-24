@@ -1,4 +1,3 @@
-import pickle
 from sqlalchemy import select
 from app.lib.cache import cache_query, invalidate_query
 from app.lib.log import log_call

@@ -10,6 +10,7 @@ from app.lib.log import log_call
 from app.lib.random_ import get_random_seq
 from app.repository import Store
 from app.schemas.user import UserSession
+
 log = getLogger(__name__)
 
 class BaseView():

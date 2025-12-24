@@ -15,6 +15,9 @@ async def lifespan(app: FastAPI):
         await store.fiels.connect()
     else:
         log.info("Use local storage with path %s", config.local_storage_dir)
+
+    await store.centrifugo.run_worker()
         
     yield
     await store.redis.close()
+    await store.centrifugo.stop_worker()
