@@ -1,8 +1,10 @@
 import typing
 
-from sqlalchemy import CheckConstraint, ForeignKey, Index, Table, Column
+from sqlalchemy import CheckConstraint, Computed, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Integer, String, Text
+from sqlalchemy.dialects.postgresql import TSVECTOR
+
 
 from .base import BaseORM, CreatedMixin, IDMixin
 if typing.TYPE_CHECKING:
@@ -20,6 +22,15 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
     like_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     dislike_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+
+    search_vector: Mapped[TSVECTOR] = mapped_column(
+        TSVECTOR, 
+        Computed( 
+            "setweight(to_tsvector('russian', coalesce(title,'')), 'A') || "
+            "setweight(to_tsvector('russian', coalesce(text,'')),  'B')",
+            persisted=True,
+        )
+    )
 
     author: Mapped["UserORM"] = relationship(back_populates="questions")
     tags: Mapped[list["TagORM"]] = relationship(
@@ -43,6 +54,7 @@ class QuestionORM(IDMixin,CreatedMixin, BaseORM):
     
     __table_args__ = (
         Index("indx_grade_count_desc", like_count.desc()),
+        Index('ix_question_search_vector', search_vector, postgresql_using='gin'),
         CheckConstraint("like_count >= 0", name="check_like_count"),
         CheckConstraint("dislike_count >= 0", name="check_dislike_count")
     )

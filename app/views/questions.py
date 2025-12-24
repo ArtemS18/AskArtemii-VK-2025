@@ -25,15 +25,47 @@ class QuestionView(BaseView):
     async def questions_list_view(
         self,
         page: int,
+        search_query: str | None = None
     ):
-        paginate = await self._get_question_paginate(page)
         _user_id = await self._get_user_id() 
-        
-        questions = await self.store.quesion.get_questions_order_by_datetime(
-            limit=self.PER_PAGE, 
-            offset=paginate.offset,
-            user_id= _user_id
+        if search_query is None:
+            paginate = await self._get_question_paginate(page)
+           
+            
+            questions = await self.store.quesion.get_questions_order_by_datetime(
+                limit=self.PER_PAGE, 
+                offset=paginate.offset,
+                user_id= _user_id
+            )
+        else:
+            total = await self.store.quesion.get_count_search_questions(search_query)
+            paginate = pgn.paginate(total, page, self.PER_PAGE)
+            questions = await self.store.quesion.search_questions_by_tsvector(
+                search_query,
+                limit=self.PER_PAGE,
+                offset=paginate.offset,
+                user_id= _user_id
+            )
+            
+        return await self.template_paginate(
+            "index.html", {
+                "pagination": paginate,
+                "questions":questions,
+                "search_query": search_query,
+            }
         )
+    
+    async def questions_list_search(
+        self,
+        search_query,
+        page: int,
+    ):
+        
+        questions = await self.store.quesion.search_questions_by_tsvector(
+            search_query,
+            limit=self.PER_PAGE, 
+        )
+        paginate = pgn.paginate(len(questions), page, self.PER_PAGE)
         return await self.template_paginate(
             "index.html", {
                 "pagination": paginate,

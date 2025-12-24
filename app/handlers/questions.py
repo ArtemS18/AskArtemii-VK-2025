@@ -4,7 +4,6 @@ from app.core.config import api_path
 from app.handlers.deps import QuestionViewDep, get_current_user
 from fastapi import Form
 
-from app.models.users import UserORM
 from app.schemas.user import UserSession
 
 router = APIRouter(prefix="")
@@ -12,9 +11,10 @@ router = APIRouter(prefix="")
 @router.get(api_path.base, response_class=HTMLResponse)
 async def questions_list_handler(
     view: QuestionViewDep,
-    page: int = Query(default=1, ge=1)
+    page: int = Query(default=1, ge=1),
+    search: str = Query(default=None)
 ):
-    template = await view.questions_list_view(page)
+    template = await view.questions_list_view(page, search)
     return template
 
 @router.get(f"{api_path.question}/{{id}}", response_class=HTMLResponse)
@@ -61,6 +61,15 @@ async def post_ask_page(
 ):
     
     return await view.create_question(title, body, user.id, tags)
+
+
+# @router.post(api_path.base)
+# async def search_questions(
+#     view: QuestionViewDep, 
+#     search: str = Form(...), 
+#     page: int = Query(default=1, ge=1)
+# ):
+#     return await view.questions_list_search(search, page)
 
 
 @router.post(f"{api_path.question}/{{id}}/answer")

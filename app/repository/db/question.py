@@ -1,5 +1,5 @@
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy import delete, insert, select, update, and_, func
+from sqlalchemy import delete, insert, select,  func
 from app.lib.log import log_call
 from app.models import QuestionTagsORM
 from sqlalchemy.orm import joinedload, selectinload, with_loader_criteria
@@ -21,6 +21,35 @@ class QuestionRepo:
     
     def __init__(self, pg: PostgresClient):
         self.pg = pg
+
+    @log_call
+    async def search_questions_by_tsvector(self, search_query: str, *, limit:int = 10, offset: int = 0, user_id: int | None = None) -> list[QuestionORM]:
+        tsq = func.websearch_to_tsquery("russian", search_query)
+        query = (
+            select(QuestionORM)
+            .where(QuestionORM.search_vector.op("@@")(tsq)).order_by(func.ts_rank_cd(QuestionORM.search_vector, tsq))
+            .options(*self.questions_options)
+        )
+        if user_id is not None:
+            query = query.options(
+                selectinload(QuestionORM.grade),
+                with_loader_criteria(
+                    QuestionGradeORM,
+                    QuestionGradeORM.user_id == user_id,
+                    include_aliases=True,
+                )
+            )
+        query = query.limit(limit).offset(offset)
+        res = await self.pg.scalars(query)
+        return res.unique().all()
+    
+    async def get_count_search_questions(self, search_query: str) -> int:
+        tsq = func.websearch_to_tsquery("russian", search_query)
+        query = (
+            select((func.count(QuestionORM.id))).where(QuestionORM.search_vector.op("@@")(tsq))
+        )
+        return await self.pg.scalar_one_or_none(query)
+      
 
     @log_call
     async def get_questions_order_by_datetime(self, limit: int = 10, offset: int =0, user_id: int | None = None) -> list[QuestionORM]:

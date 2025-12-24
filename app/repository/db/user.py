@@ -1,6 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import desc, func, select
 from app.lib.cache import cache_query, invalidate_query
 from app.lib.log import log_call
+from app.models.grade import QuestionGradeORM
+from app.models.questions import QuestionORM
 from app.models.users import UserORM, UserProfileORM
 from sqlalchemy.orm import joinedload
 from app.schemas.user import UserUpdate, UserWrite
@@ -14,9 +16,16 @@ class UserRepo():
     @log_call
     @cache_query("users", ttl=700)
     async def get_users_order_by_popular(self, limit=10) -> list[UserORM]:
-        query = select(UserORM).order_by(UserORM.popular_count.desc()).limit(limit).options(joinedload(UserORM.profile))
-        raw = await self.pg._execute(query)
-        users = raw.scalars().all()
+        sub_q = (
+            select(UserORM.id)
+            .join(QuestionORM, UserORM.id == QuestionORM.author_id)
+            .group_by(UserORM.id)
+            .order_by(func.sum(QuestionORM.like_count).desc())
+            .limit(10)
+            .subquery()
+        )
+        query = select(UserORM).where(UserORM.id.in_(sub_q)).options(joinedload(UserORM.profile))
+        users = await self.pg.scalars_all(query)
         return users
 
     @log_call
