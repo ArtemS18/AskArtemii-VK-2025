@@ -4,6 +4,7 @@ from typing import Protocol
 from fastapi import UploadFile
 
 from app.core.config import config
+from app.repository.centrifugo.client import CentrifugoCletnt
 from app.repository.db.answer import AnswerRepo
 from app.repository.db.client import PostgresClient
 from app.repository.db.grade import GradesRepo
@@ -24,6 +25,7 @@ class FileRepo(Protocol):
 class Store:
     fiels: FileRepo
     redis: UserSessions
+    centrifugo: CentrifugoCletnt
 
     quesion: QuestionRepo
     user: UserRepo
@@ -53,7 +55,12 @@ async def init_store() -> Store:
             user=UserRepo(pg),
             tag=TagRepo(pg),
             grade=GradesRepo(pg),
-            answer=AnswerRepo(pg)
+            answer=AnswerRepo(pg),
+            centrifugo=CentrifugoCletnt(
+                config.centrifugo_jwt_key,
+                config.centrifugo_api_key,
+                config.centrifugo_api_url
+            )
         )
     return _store
 

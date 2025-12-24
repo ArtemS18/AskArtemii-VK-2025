@@ -39,16 +39,27 @@ async def get_current_user(req: Request,  store: StoreDep) -> UserSession :
     exp = HTTPException(status_code=status.HTTP_303_SEE_OTHER, headers={
             "Location": location
         })
+    json_exeption =  HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     
     if not user_session:
-        raise exp
+        raise json_exeption
     
     user = await store.redis.get_session(user_session)
 
     if not user:
-        raise exp
+        raise json_exeption
     
     return user
+
+async def get_existed_user(req: Request,  store: StoreDep) -> UserSession :
+    user_session= req.cookies.get("session")
+    
+    if user_session:
+        user = await store.redis.get_session(user_session)
+
+        return user
+    else:
+        return None
 
 
 AuthoViewDep = Annotated[AuthoView, Depends(get_autho_view)]
@@ -90,22 +101,22 @@ async def validate_author_answer(request: Request, store: StoreDep, user_session
             detail="Invalid JSON body",
         )
 
-    answer_id = body.get("answer_id")
-    if answer_id is None:
+    question_id = body.get("question_id")
+    if question_id is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail="answer_id is required",
+            detail="question_id is required",
         )
 
     try:
-        answer_id = int(answer_id)
+        question_id = int(question_id)
     except (TypeError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail="answer_id must be an integer",
+            detail="question_id must be an integer",
         )
     
-    answer = await store.answer.get_answer_by_id(answer_id)
-    if not(answer and answer.author_id == user_id):
+    question = await store.quesion.get_question_by_id(question_id)
+    if not(question and question.author_id == user_id):
          raise HTTPException(status_code=403, detail="You are not author")
 

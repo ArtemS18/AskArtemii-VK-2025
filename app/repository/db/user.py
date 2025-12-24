@@ -56,7 +56,7 @@ class UserRepo():
         updated_profile = {k: v for k, v in updated.items() if k in ("nickname", "img_url")}
 
         query = select(UserORM).where(UserORM.id == user_id).options(joinedload(UserORM.profile))
-        async with self.pg.get_session(with_tr=True) as session:
+        async with self.pg.get_session() as session:
             raw = await session.execute(query)
             user = raw.scalar_one_or_none()
             if user is None:
@@ -75,4 +75,5 @@ class UserRepo():
                         setattr(user.profile, k, v)
 
             await session.refresh(user)
+            await session.commit()
             return user

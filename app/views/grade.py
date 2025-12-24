@@ -34,40 +34,131 @@ class GredeView:
     @_exeptions
     async def create_question_grade(self, grade: GradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.create_question_grade(user_id, grade.question_id, is_like=grade.is_like)
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "question.grade_updated",
+                "payload": {
+                    "is_like": grade.is_like,
+                    "user_id": user_id,
+                    "like_count": new_grade.like_count,
+                    "dislike_count": new_grade.dislike_count,
+                }
+            }
+        )
         return new_grade
         
 
     @_exeptions
     async def delete_question_grede(self, grade: GradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.delete_question_grade(user_id, grade.question_id)
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "question.grade_updated",
+                "payload": {
+                    "is_like": grade.is_like,
+                    "user_id": user_id,
+                    "like_count": new_grade.like_count,
+                    "dislike_count": new_grade.dislike_count,
+                }
+            }
+        )
         return new_grade
         
 
     @_exeptions
     async def update_question_grade(self, grade: GradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.update_question_grade(user_id, grade.question_id, grade.is_like)
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "question.grade_updated",
+                "payload": {
+                    "is_like": grade.is_like,
+                    "user_id": user_id,
+                    "like_count": new_grade.like_count,
+                    "dislike_count": new_grade.dislike_count,
+                }
+            }
+        )
         return new_grade
         
 
     @_exeptions
     async def create_answer_grade(self, grade: AnswerGradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.create_answer_grade(user_id, grade.answer_id, is_like=grade.is_like)
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "answer.grade_updated",
+                "payload": {
+                    "is_like": grade.is_like,
+                    "user_id": user_id,
+                    "active": True,
+                    "answer_id": grade.answer_id,
+                    "like_count": new_grade.like_count,
+                    "dislike_count": new_grade.dislike_count,
+                }
+            }
+        )
         return new_grade
         
 
     @_exeptions
     async def delete_answer_grede(self, grade: AnswerGradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.delete_answer_grade(user_id, grade.answer_id)
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "answer.grade_updated",
+                "payload": {
+                    "is_like": grade.is_like,
+                    "active": False,
+                    "user_id": user_id,
+                    "answer_id": grade.answer_id,
+                    "like_count": new_grade.like_count,
+                    "dislike_count": new_grade.dislike_count,
+                }
+            }
+        )
         return new_grade
         
 
     @_exeptions
     async def update_answer_grade(self, grade: AnswerGradeIn, user_id: int) -> GradeOut:
         new_grade = await self.store.grade.update_answer_grade(user_id, grade.answer_id, grade.is_like)
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "answer.grade_updated",
+                "payload": {
+                    "is_like": grade.is_like,
+                    "active": True,
+                    "user_id": user_id,
+                    "answer_id": grade.answer_id,
+                    "like_count": new_grade.like_count,
+                    "dislike_count": new_grade.dislike_count,
+                }
+            }
+        )
         return new_grade
     
     @_exeptions
-    async def correct_answer(self, grade: AnswerCorrect) -> AnswerOut:
-        new_grade = await self.store.grade.correct_answer(grade.answer_id, grade.is_correct)
+    async def correct_answer(self, grade: AnswerCorrect, user_id: int) -> AnswerOut:
+        await self.store.grade.del_correct_answers(grade.answer_id)
+        new_grade = await self.store.grade.set_correct_answer(grade.answer_id, grade.is_correct)
+
+        await self.store.centrifugo.publish(
+            channel=f"question:{grade.question_id}",
+            data={
+                "type": "answer.correct_updated",
+                "payload": {
+                    "user_id": user_id,
+                    "answer_id": grade.answer_id,
+                    "is_correct": new_grade.is_correct,
+                }
+            }
+        )
         return new_grade
         

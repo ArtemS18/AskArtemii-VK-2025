@@ -18,12 +18,6 @@ $(document).ready(function() {
     }
   }
 
-  /**
-   * Универсальная логика выбора метода:
-   * - Если не было активной оценки -> POST
-   * - Если кликаем ту же активную -> DELETE (снять)
-   * - Если кликаем другую при активной -> PUT (сменить)
-   */
   function resolveMethod($likeBtn, $dislikeBtn, $clickedBtn) {
     var clickedIsLike = String($clickedBtn.data('is-like')) === "true";
 
@@ -72,10 +66,12 @@ $(document).ready(function() {
         $card.find('.like-count').text(data.like_count);
         $card.find('.dislike-count').text(data.dislike_count);
       },
-      error: function() {
-        // при ошибке — лучше просто перезагрузить реальные значения с сервера,
-        // но если пока нет отдельного GET — откатим на "предыдущее"
-        // (минимальный корректный откат — снять всё и дать пользователю повторить)
+      error: function(xhr) {
+        if (xhr.status === 401 || xhr.status === 403) {
+          const next = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/login?next=${next}`;
+          return;
+        }
         applyButtonState($likeBtn, $likeBtn.hasClass('liked-like'));
         applyButtonState($dislikeBtn, $dislikeBtn.hasClass('liked-dislike'));
       }
@@ -89,6 +85,8 @@ $(document).ready(function() {
     var $btn = $(this);
     var answerId = $btn.data('answer-id');
     var isLike = String($btn.data('is-like')) === "true";
+    var $question = $('.grade-btn');
+    var questionId = $question.data('question-id')
 
     // контейнер конкретного ответа
     var $answerCard = $btn.closest('article.card');
@@ -105,13 +103,11 @@ $(document).ready(function() {
     }
 
     $.ajax({
-      // ВАЖНО: если у вас другой endpoint для ответов — поменяйте здесь.
-      // Например: '/grade/answer/'
       url: '/grade/answer',
       method: method,
       contentType: 'application/json',
       dataType: 'json',
-      data: JSON.stringify({ is_like: isLike, answer_id: answerId }),
+      data: JSON.stringify({ is_like: isLike, answer_id: answerId, question_id: questionId }),
       headers: {
         'X-CSRFToken': csrfToken,
         'X-Requested-With': 'XMLHttpRequest'
@@ -120,7 +116,12 @@ $(document).ready(function() {
         $answerCard.find('.answer-like-count').text(data.like_count);
         $answerCard.find('.answer-dislike-count').text(data.dislike_count);
       },
-      error: function() {
+      error: function(xhr) {
+        if (xhr.status === 401 || xhr.status === 403) {
+          const next = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/login?next=${next}`;
+          return;
+        }
         applyButtonState($likeBtn, $likeBtn.hasClass('liked-like'));
         applyButtonState($dislikeBtn, $dislikeBtn.hasClass('liked-dislike'));
       }

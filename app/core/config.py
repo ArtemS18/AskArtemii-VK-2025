@@ -56,9 +56,15 @@ class Config(BaseSettings):
     endpoint: EndpointConfig
     db: DBConfig
     minio: MinioConfig
+
     local_storage: bool = True
     local_storage_dir: str = "media/avatars"
     local_storage_url: str = "http://localhost:8080"
+
+    centrifugo_api_url: str = "http://localhost:8090/api"
+    centrifugo_api_key: str = "CENTRIFUGO_API_KEY"
+    centrifugo_jwt_key: str = "SUPER_SECRET_32+_CHARS"
+
 
     @property
     def template_path(self):

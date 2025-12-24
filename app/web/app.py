@@ -13,8 +13,8 @@ app = FastAPI(lifespan=lifespan, docs_url="/docs")
 
 def setup_app() -> FastAPI:
     setup_logger(logging.INFO)
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-    app.mount("/media", StaticFiles(directory="media"), name="static")
+    # app.mount("/static", StaticFiles(directory="static"), name="static")
+    # app.mount("/media", StaticFiles(directory="media"), name="static")
     setup_routers(app)
     app.add_middleware(
         CORSMiddleware,

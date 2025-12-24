@@ -1,5 +1,5 @@
 from typing import Any
-from sqlalchemy import and_, delete, insert, update
+from sqlalchemy import and_, delete, insert, select, update
 from app.lib.log import log_call
 from app.models.answers import AnswerORM
 from app.models.base import BaseORM
@@ -153,7 +153,14 @@ class GradesRepo:
                     raise e
             
     @log_call
-    async def correct_answer(self, answer_id: int, is_correct_: bool) -> AnswerOut:
+    async def set_correct_answer(self, answer_id: int, is_correct_: bool) -> AnswerOut:
         query_update = update(AnswerORM).where(AnswerORM.id==answer_id).values(is_correct=is_correct_).returning(AnswerORM.id, AnswerORM.is_correct)
         res = await self.pg.mapping(query_update)
         return AnswerOut.model_validate(res, by_alias=True)
+    
+    @log_call
+    async def del_correct_answers(self, answer_id: int):
+        _sub_query = select(AnswerORM.question_id).where(AnswerORM.id==answer_id).limit(1).subquery()
+        query_update = update(AnswerORM).where(and_(AnswerORM.question_id==_sub_query, AnswerORM.id != answer_id)).values(is_correct=False)
+        await self.pg._execute(query_update)
+    

@@ -59,6 +59,7 @@ async def post_ask_page(
     tags: str | None = Form(None), 
     user: UserSession = Depends(get_current_user)
 ):
+    
     return await view.create_question(title, body, user.id, tags)
 
 
@@ -66,7 +67,8 @@ async def post_ask_page(
 async def post_answer(
     view: QuestionViewDep, 
     id: int = Path(...), 
+    page: str = Form(),
     answer: str = Form(...),
     user: UserSession = Depends(get_current_user)
 ):
-    return await view.create_answer(id, answer, user.id)
+    return await view.create_answer(id, answer, user.id, int(page))

@@ -76,7 +76,8 @@ async def answer_grade_put_handler(
 async def answer_correct_handler(
     grade: Annotated[AnswerCorrect, Body(embed=False)], 
     store: StoreDep, 
+    user: UserSession= Depends(get_current_user)
 ) -> AnswerOut:
     view = GredeView(store)
-    grade_count =  await view.correct_answer(grade)
+    grade_count =  await view.correct_answer(grade, user.id)
     return grade_count

@@ -94,7 +94,7 @@
                   <time datetime="data">{{answer.created_at.strftime("%d-%m-%Y %H:%M")}}</time>
                 </div>
                 {%if answer.is_correct %}
-                <span class="badge text-bg-primary"><i class="bi bi-check2-square me-1"></i>Решение</span>
+                  <span class="badge text-bg-primary answer-correct-badge"><i class="bi bi-check2-square me-1"></i>Решение</span>
                 {%endif%}
               </header>
 
@@ -102,7 +102,7 @@
               {% if user_profile and question.author_id == user_profile.id %}
                 <div class="form-check mt-2">
                     <input
-                        class="form-check-input answer-correct-toggle {% if answer.is_correct %} answer-correct {% endif %}"
+                        class="form-check-input answer-correct-toggle"
                         type="checkbox"
                         id="ans-{{ answer.id }}-correct"
                         data-answer-id="{{ answer.id }}"
@@ -126,9 +126,21 @@
         <div class="card-body">
           <form action="{{ URL_QUESTION }}/{{ question.id }}/answer" method="post" class="needs-validation" novalidate>
             <div class="mb-3">
+              {%if error %}
+                <div class="alert alert-danger" role="alert">
+                  {%if error.text%} 
+                    {{error.text}}
+                  {%else%}
+                    Неизветная ошибка!
+                  {%endif%}
+                </div>
+              {%endif%}
               <label for="answer" class="form-label">Ваш ответ</label>
               <textarea id="answer" name="answer" class="form-control" rows="6" placeholder="Напишите развернутый ответ…" required></textarea>
               <div class="invalid-feedback">Пожалуйста, введите текст ответа.</div>
+
+              <input  class="form-control" type="hidden" name="page" id="page" value="{{ pagination.page}}" readonly>
+              <input  class="form-control" type="hidden" name="question_id" id="question_id" value="{{ question.id}}" readonly>
             </div>
             <button class="btn btn-primary" type="submit">Отправить</button>
           </form>
@@ -140,6 +152,16 @@
 {% endblock %}
 
 {%block scripts%}
+  <script src="https://cdn.jsdelivr.net/npm/centrifuge@5.5.3/dist/centrifuge.min.js"></script>
+  <script>
+    window.CENTRIFUGO_WS_URL = "{{ CENTRIFUGO_WS_URL }}";
+    window.CENTRIFUGO_TOKEN_URL = "{{ CENTRIFUGO_TOKEN_URL }}";
+    window.QUESTION_CHANNEL = "question:{{ question.id }}";
+    window.CURRENT_USER_ID = {{ user_profile.id if user_profile else 'null' }};
+    window.IS_AUTHOR = {{ 'true' if user_profile and question.author_id == user_profile.id else 'false' }};
+  </script>
+  <script src="{{STATIC_URL}}/realtime_question.js"></script>
+
   <script src="{{STATIC_URL}}/grade.js"></script>
   <script src="{{STATIC_URL}}/correct_answer.js"></script>
 {%endblock%}

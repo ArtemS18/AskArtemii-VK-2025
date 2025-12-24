@@ -1,8 +1,9 @@
 from logging import getLogger
 from fastapi import Request
-from app.lib import pagination as pgn
+from app.lib import pagination as pgn, parser
 from app.models.questions import QuestionORM
 from app.repository import Store
+from app.schemas.error import ErrorTemplate
 from app.views.base import BaseView
 from app.core.config import api_path
 from fastapi.responses import RedirectResponse
@@ -41,17 +42,21 @@ class QuestionView(BaseView):
     async def question_view(
         self,
         id: int, 
-        page: int
+        page: int,
+        **context
     ):
         _user_id = await self._get_user_id() 
         question_orm: QuestionORM = await self.store.quesion.get_question_by_id(id, user_id= _user_id)
+        log.info("%s, %s", question_orm.answers_count, page)
        
         pagination_data = pgn.paginate(question_orm.answers_count, page, self.PER_PAGE)
+        log.info("%s", pagination_data)
         return await self.template_paginate(
              "question.html", {
                 "question":question_orm, 
-                "answers": question_orm.answers,
-                "pagination": pagination_data
+                "answers": question_orm.answers[pagination_data.offset:pagination_data.offset+self.PER_PAGE],
+                "pagination": pagination_data,
+                **context
                 }
             )
 
@@ -96,24 +101,60 @@ class QuestionView(BaseView):
                 }
         )
 
-    async def get_ask_page(self):
-        return await self.template_response("ask.html", {})
+    async def get_ask_page(self, **context):
+        return await self.template_response("ask.html", context)
 
     async def create_question(
-            self, 
-            title: str, 
-            body: str, 
-            user_id: int, 
-            tags: str | None = None # TODO: fix
-        ):
-        q = await self.store.quesion.create_question(body, user_id, title)
+        self,
+        title: str,
+        body: str,
+        user_id: int,
+        tags: str | None = None,
+    ):
+        for k, v in {"Заголовок": title, "Текст вопроса": body}.items():
+            if v is None or v.strip() == "":
+                return await self.get_ask_page(
+                    title=title,
+                    body=body,
+                    error=ErrorTemplate(text=f"Поле '{k}' должно быть заполнено"),
+                )
+
+        tag_names = parser.parse_tags(tags)
+        tag_orms = await self.store.tag.get_or_create_tags(tag_names)
+
+        q = await self.store.quesion.create_question(body, user_id, title, tags=tag_orms)
+
+        await self.store.tag.bump_popularity([t.id for t in tag_orms])
+
         return RedirectResponse(f"{api_path.question}/{q.id}", status_code=303)
 
     async def create_answer(
             self, 
             question_id: int, 
             text: str,  
-            user_id: int
+            user_id: int,
+            page: int, 
         ):
-        await self.store.quesion.create_answer(text, user_id, question_id)
-        return RedirectResponse(f"{api_path.question}/{question_id}", status_code=303)
+        if not text:
+            return await self.question_view(question_id, page, error=ErrorTemplate(text="Введите тест ответа"))
+        answer = await self.store.quesion.create_answer(text, user_id, question_id)
+        await self.store.centrifugo.publish(
+            channel=f"question:{question_id}",
+            data={
+                "type": "answer.created",
+                "payload": {
+                    "id": answer.id,
+                    "text": answer.text,
+                    "author": {
+                        "id": answer.author.id,
+                        "nickname": answer.author.profile.nickname,
+                        "img_url": answer.author.profile.img_url,
+                    },
+                    "created_at": answer.created_at.strftime("%d-%m-%Y %H:%M"),
+                    "like_count": answer.like_count or 0,
+                    "dislike_count": answer.dislike_count or 0,
+                    "is_correct": answer.is_correct,
+                },
+            },
+        )
+        return RedirectResponse(f"{api_path.question}/{question_id}?page={page}", status_code=303)

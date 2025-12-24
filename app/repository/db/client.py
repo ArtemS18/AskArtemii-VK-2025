@@ -22,7 +22,9 @@ class PostgresClient:
         if not self.session:
             raise ValueError("session is None")
         async with self.session() as session:  # type: AsyncSession
-            return await session.execute(stmt)
+            res = await session.execute(stmt)
+            await session.commit()
+            return res
 
     async def scalar_one_or_none(self, stmt: Select[tuple[T]]) -> Optional[T]:
         res = await self._execute(stmt)

@@ -24,16 +24,27 @@ class AuthoView(BaseView):
 
     async def login_post(self, email: str, password: str, continue_url: Optional[str] = None):
         user = await self.store.user.get_user_by_email(email)
+
+        for k, v in {"email": email, "password": password}.items():
+            if v is None or v == "":
+                return await self.login_page(
+                        email=email,
+                        password=password, 
+                        error=ErrorTemplate(text=f"Поле {k} должно быть заполнено")
+                    )
+                
         if not user:
             return await self.login_page(
-                error=ErrorTemplate(text="Invalid email or password."),
-                email=email
+                error=ErrorTemplate(text="Неправельний email или пароль"),
+                email=email,
+                password=password
             )
 
         if not pwd.verify_password(password, user.hashed_password):
            return await self.login_page(
-                error=ErrorTemplate(text="Invalid email or password."),
-                email=email
+                error=ErrorTemplate(text="Неправельний email или пароль"),
+                email=email,
+                password=password
             )
 
         dest = continue_url or api_path.base
@@ -48,11 +59,21 @@ class AuthoView(BaseView):
 
     async def signup_post(self, form_data: UserForm):
         context = form_data.model_dump()
+
+        for k, v in context.items():
+            if v is None or v == "":
+                return await self.singup_page(**context, error=ErrorTemplate(text=f"Поле {k} должно быть заполнено"))
+                
+        if len(form_data.password) < 8:
+            return await self.singup_page(**context, error=ErrorTemplate(text="Длина пароля должны быть минимум 8 символов"))
+        
         if form_data.password != form_data.password_confirm:
-            return await self.singup_page(**context, error=ErrorTemplate(text="Passwords do not match"))
+            return await self.singup_page(**context, error=ErrorTemplate(text="Пароли не совпадают"))
+        
+        
 
         if await self.store.user.get_user_by_email(form_data.email):
-            return await self.singup_page(**context, error=ErrorTemplate(text="Email already registed"))
+            return await self.singup_page(**context, error=ErrorTemplate(text="Пользователь с таким email уже зарегистрирован"))
 
         pwd_hashed = pwd.hash_password(form_data.password)
         user_data = UserWrite(

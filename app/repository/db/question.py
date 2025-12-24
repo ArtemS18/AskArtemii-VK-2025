@@ -126,19 +126,30 @@ class QuestionRepo:
         raw = await self.pg._execute(query)
         return raw.scalar_one()
     
-    async def create_question(self, text: str, author_id: int, title: str) -> QuestionORM:
+    async def create_question(self, text: str, author_id: int, title: str, tags: list[TagORM] | None) -> QuestionORM:
         async with self.pg.get_session() as session:
             q = QuestionORM(text=text, author_id=author_id, title=title)
+            if tags:
+                q.tags = tags
             session.add(q)
             await session.commit()
             await session.refresh(q)
             return q
 
     async def create_answer(self, text: str, author_id: int, question_id: int) -> AnswerORM:
-         async with self.pg.get_session() as session:
+        async with self.pg.get_session() as session:
             a = AnswerORM(text=text, author_id=author_id, question_id=question_id)
             session.add(a)
+            await session.flush()
+
+            stmt = (
+                select(AnswerORM)
+                .where(AnswerORM.id == a.id)
+                .options(selectinload(AnswerORM.author).selectinload(UserORM.profile))
+            )
+            res = await session.execute(stmt)
+            a_full = res.scalar_one()
+
             await session.commit()
-            await session.refresh(a)
-            return a
+            return a_full
 

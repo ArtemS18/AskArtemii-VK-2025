@@ -44,6 +44,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  centrifugo:
+    image: centrifugo/centrifugo:v5
+    container_name: centrifugo
+    command: >
+      centrifugo
+      -c /centrifugo/config.json
+    ports:
+      - "8090:8000"
+    volumes:
+      - ./centrifugo/config.json:/centrifugo/config.json:ro
+    restart: unless-stopped
+
 
 
 volumes:

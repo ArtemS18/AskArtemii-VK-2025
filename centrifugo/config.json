@@ -1,0 +1,14 @@
+{
+  "token_hmac_secret_key": "SUPER_SECRET_32+_CHARS",
+  "api_key": "CENTRIFUGO_API_KEY",
+  "allowed_origins": ["http://localhost:8082", "http://127.0.0.1:8082", "http://localhost:8080", "http://127.0.0.1:8080"],
+  "admin": true,
+  "admin_password": "admin",
+  "admin_secret": "admin_secret",
+  "namespaces": [
+    {
+      "name": "question",
+      "allow_subscribe_for_client": true
+    }
+  ]
+}
