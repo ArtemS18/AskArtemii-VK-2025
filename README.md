@@ -16,3 +16,19 @@
           Добавлен комбинированный полнотекстовый поиск с использованием ts_vector.
           Добавлен сron-скрипт для проведение расчетов.
           Добавлено кеширование запросов к БД и инвалидация по ключу.
+
+## Запуск 
+`docker compose up -d`
+`poetry install`
+`poetry run main`
+
+## Скриншоты работы
+
+Страница входа
+<img width="1779" height="949" alt="изображение" src="https://github.com/user-attachments/assets/3d75a25e-eb07-484f-bb93-02bbd5e80959" />
+
+Страница всех вопросов (с тестовыми данными)
+<img width="1401" height="1193" alt="изображение" src="https://github.com/user-attachments/assets/d9147181-a124-4b1e-ba7d-54e80bab4686" />
+
+Страница одного вопроса (с тестовыми данными)
+<img width="1365" height="916" alt="изображение" src="https://github.com/user-attachments/assets/549797c2-f16a-4a4c-91ad-3286488ae67b" />
