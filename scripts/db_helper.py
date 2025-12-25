@@ -3,7 +3,7 @@ import logging
 from app.core.db import SessionLocal, init_db, drop_db
 from app.models import (
     UserORM, UserProfileORM, QuestionORM, AnswerORM,
-    QuestionLikeORM, AnswerLikeORM, TagORM, QuestionTagsORM
+    QuestionGradeORM, AnswerGradeORM, TagORM, QuestionTagsORM
 )
 import sys
 import random 
@@ -163,7 +163,7 @@ async def fill_db(ratio = 100):
         question_grade_data_tuples = generate_question_grade(ratio, created_user_ids, created_question_ids)
         for k in range(0, len(question_grade_data_tuples), 1000):
             len_ = min(len(question_grade_data_tuples)-1, k+1000)
-            stmt_question_grade = insert(QuestionLikeORM).values(question_grade_data_tuples[k:len_])
+            stmt_question_grade = insert(QuestionGradeORM).values(question_grade_data_tuples[k:len_])
             await session.execute(stmt_question_grade)
             await session.flush()
         log.info(f"Created {len(question_grade_data_tuples)} question grade.")
@@ -171,7 +171,7 @@ async def fill_db(ratio = 100):
         answer_grade_data_tuples = generate_answer_grade(ratio, created_user_ids, created_answer_ids)
         for k in range(0, len(answer_grade_data_tuples), 1000):
             len_ = min(len(answer_grade_data_tuples)-1, k+1000)
-            stmt_answer_grade = insert(AnswerLikeORM).values(answer_grade_data_tuples[k:len_])
+            stmt_answer_grade = insert(AnswerGradeORM).values(answer_grade_data_tuples[k:len_])
             await session.execute(stmt_answer_grade)
             await session.flush()
         log.info(f"Created {len(answer_grade_data_tuples)} answer grade.")
@@ -179,7 +179,7 @@ async def fill_db(ratio = 100):
         await session.commit()
         log.info("Database filled successfully!")
 
-async def main():
+async def async_main():
     ratio = 10
     if len(sys.argv) > 1:
         try:
@@ -192,6 +192,9 @@ async def main():
     setup_logger(logging.INFO)
     await fill_db(ratio)
 
+def main():
+    asyncio.run(async_main())
+
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main())
+    asyncio.run(async_main())

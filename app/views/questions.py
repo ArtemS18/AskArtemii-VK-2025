@@ -158,8 +158,6 @@ class QuestionView(BaseView):
 
         q = await self.store.quesion.create_question(body, user_id, title, tags=tag_orms)
 
-        await self.store.tag.bump_popularity([t.id for t in tag_orms])
-
         return RedirectResponse(f"{api_path.question}/{q.id}", status_code=303)
 
     async def create_answer(

@@ -1,7 +1,7 @@
 from urllib.parse import parse_qs
 
 
-def application(environ, start_response):
+def app(environ, start_response):
     method = environ.get("REQUEST_METHOD", "GET")
 
     get_params = parse_qs(environ.get("QUERY_STRING", ""))
