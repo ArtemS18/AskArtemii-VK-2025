@@ -32,3 +32,12 @@
 
 Страница одного вопроса (с тестовыми данными)
 <img width="1365" height="916" alt="изображение" src="https://github.com/user-attachments/assets/549797c2-f16a-4a4c-91ad-3286488ae67b" />
+
+Страница редактирования профиля
+<img width="1372" height="780" alt="изображение" src="https://github.com/user-attachments/assets/ec35e6d4-f824-4067-bf51-934f2c152d9a" />
+
+Страница создания вопроса
+<img width="1413" height="781" alt="изображение" src="https://github.com/user-attachments/assets/4e61f52d-f04f-4a74-b34d-a3bff5a0995f" />
+
+<img width="1398" height="796" alt="изображение" src="https://github.com/user-attachments/assets/0abd3e8c-7457-4dfb-8f35-33630a5cc44c" />
+
